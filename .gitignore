@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Local artifacts / secrets
+.artifacts/
+config.local.json
+
+# Node
+node_modules/
+
+# OS
+.DS_Store

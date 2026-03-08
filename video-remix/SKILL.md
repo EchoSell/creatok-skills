@@ -1,0 +1,107 @@
+---
+name: creatok:video-remix
+version: "1.0.0"
+description: 'This skill should be used when the user asks to recreate a TikTok video, make a similar TikTok, adapt a reference video to their own product, rewrite a selling video, make a non-1:1 remix, or turn a viral video into their own version. Helps TikTok creators and sellers turn a reference video into a product-fit or style-fit version with light follow-up questions, smooth handoff from analysis, and minimal repeated input.'
+license: Internal
+compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local video analysis setup required."
+metadata:
+  openclaw:
+    requires:
+      env: []
+      bins:
+        - python3
+    primaryEnv: CREATOK_API_KEY
+  author: creatok
+  version: "1.0.0"
+  geo-relevance: "low"
+  tags:
+    - tiktok
+    - video-remix
+    - recreate-video
+    - selling-video
+    - script-rewrite
+    - storyboard-rewrite
+    - creator-workflow
+    - seller-workflow
+    - product-adaptation
+    - viral-video
+    - ecommerce
+    - ugc
+  triggers:
+    - "recreate this TikTok"
+    - "make a similar video"
+    - "rewrite this selling video"
+    - "adapt this video to my product"
+    - "make a remix of this video"
+    - "make this in my own style"
+    - "turn this viral video into my version"
+    - "make a non 1:1 version"
+    - "rewrite this script for my product"
+    - "help me recreate this video"
+---
+
+# video-remix
+
+## Constraints
+
+- Platform: **TikTok only**.
+- Must NOT do 1:1 copying.
+- Must apply:
+  - structure rewrite
+  - expression rewrite
+  - style differentiation
+- The model's final user-facing response should match the user's input language, default English.
+- Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
+
+## Workflow
+
+1) Analyze reference video
+- Reuse the `video-analyze` workflow.
+- Gather enough reference context for the model to understand what makes the source video work.
+
+2) Write source artifacts for the model
+- `outputs/remix_source.json`
+- Include:
+  - reference TikTok URL
+  - analyze result payload
+  - analyze artifacts directory
+  - optional user constraints such as angle / brand / style
+
+3) Model output happens in the conversation
+- The model should read `outputs/remix_source.json`
+- The model should help the user choose a direction without over-constraining the process.
+- Typical directions include:
+  - stay closer to the original concept and execution
+  - create a differentiated remix version
+  - use the reference only as inspiration for a new version
+- The model should present these directions in simple creator / seller language rather than technical or production language.
+- The model should decide, with minimal friction:
+  - what stays at the idea level
+  - what changes in structure / wording / visuals
+  - copyright / similarity risks
+  - the level of detail that is most helpful next: concept, outline, short script, storyboard, or shotlist
+- The model should ask only for high-impact creative preferences when needed, not force a fixed template.
+- The model should usually show a useful first draft quickly instead of starting with many questions.
+- If the user wants to recreate or adapt a selling video, the model should first collect the user's own product context before writing a fitted script.
+- Start with only the most important product details:
+  - product name
+  - core selling points
+  - product images or reference materials if available
+  - price / offer / promotion details if relevant
+- If more context is needed, the model should ask short follow-up questions one by one instead of requiring a long upfront brief.
+- The model should avoid making the user restate information that was already clear from the previous analysis or conversation.
+
+4) If the user wants final generation
+- Once the creative direction is clear enough, the model should hand off to `creatok:video-generate` using the script or brief already developed in the conversation.
+- The model should avoid asking the user to rewrite their request from scratch before generation.
+
+## Artifacts
+
+Write under `video-remix/.artifacts/<run_id>/...`.
+
+## Notes
+
+- This skill should feel like a creative bridge between analysis and generation.
+- Prefer smooth continuation from the analyzed reference rather than making the user restate the whole idea.
+- For selling-video recreation, adapt the reference to the user's own product instead of drafting a generic copy first.
+- Keep the interaction lightweight and practical for non-technical creator / seller users.
