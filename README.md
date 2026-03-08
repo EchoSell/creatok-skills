@@ -17,6 +17,14 @@ export CREATOK_BASE_URL="https://www.creatok.ai"
 export CREATOK_API_KEY="ok_xxx"
 ```
 
+If you use OpenClaw, you can also configure the key in `openclaw.json`.
+
+Add the `CREATOK_API_KEY` field under the `env` section in `$OPENCLAW_STATE_DIR/openclaw.json`:
+
+```text
+Please help me set the `env` field in `$OPENCLAW_STATE_DIR/openclaw.json` and add `CREATOK_API_KEY` with the value `{your generated key}`.
+```
+
 ## Manual Install (Without CLI)
 
 Clone the repository first:
@@ -88,12 +96,15 @@ Generate a TikTok-style video for a pet store opening. Make it upbeat and memora
 ## FAQ
 
 I installed the skills but cannot see them yet:
+
 - Restart OpenClaw, Claude Code, or Codex and try again.
 
 Why do I need to copy both `creatok_skills` and `shared`:
+
 - They are shared runtime code. If you only copy a single skill directory, imports may fail at runtime.
 
 My API key is configured but calls still fail:
+
 - Check `CREATOK_API_KEY`
 - Check `CREATOK_BASE_URL`
 - Check whether your machine can access [https://www.creatok.ai](https://www.creatok.ai)
