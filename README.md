@@ -8,23 +8,6 @@ A set of skills for TikTok creators, sellers, and operators to:
 
 These skills work through CreatOK's remote APIs. You only need to install them and configure your API key.
 
-## Before You Install
-
-First configure your CreatOK Open Skills API key:
-
-```bash
-export CREATOK_BASE_URL="https://www.creatok.ai"
-export CREATOK_API_KEY="ok_xxx"
-```
-
-If you use OpenClaw, you can also configure the key in `openclaw.json`.
-
-Add the `CREATOK_API_KEY` field under the `env` section in `$OPENCLAW_STATE_DIR/openclaw.json`:
-
-```text
-Please help me set the `env` field in `$OPENCLAW_STATE_DIR/openclaw.json` and add `CREATOK_API_KEY` with the value `{your generated key}`.
-```
-
 ## Manual Install (Without CLI)
 
 Clone the repository first:
@@ -61,6 +44,23 @@ After installation, you should see these skills:
 creatok:video-analyze
 creatok:video-remix
 creatok:video-generate
+```
+
+## Configure Your API Key
+
+Set your CreatOK Open Skills API key:
+
+```bash
+export CREATOK_BASE_URL="https://www.creatok.ai"
+export CREATOK_API_KEY="ok_xxx"
+```
+
+If you use OpenClaw, you can also configure the key in `openclaw.json`.
+
+Add the `CREATOK_API_KEY` field under the `env` section in `$OPENCLAW_STATE_DIR/openclaw.json`:
+
+```text
+Please help me set the `env` field in `$OPENCLAW_STATE_DIR/openclaw.json` and add `CREATOK_API_KEY` with the value `{your generated key}`.
 ```
 
 ## How To Use
