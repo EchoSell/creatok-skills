@@ -9,7 +9,7 @@ metadata:
     requires:
       env: []
       bins:
-        - python3
+        - node
     primaryEnv: CREATOK_API_KEY
   author: creatok
   version: "1.0.0"
@@ -31,13 +31,14 @@ metadata:
     - "generate a TikTok video"
     - "create a TikTok video"
     - "turn this script into a video"
-    - "generate the final video"
-    - "make this into a video"
     - "create a selling video"
     - "generate a video from this brief"
-    - "produce the final version"
     - "start video generation"
-    - "make the final TikTok"
+    - "generate it now"
+    - "go ahead and generate"
+    - "use this script to generate"
+    - "make the video now"
+    - "make this into a video"
 ---
 
 # video-generate
@@ -49,7 +50,7 @@ metadata:
 - Must request **user confirmation** before triggering any paid/high-cost video generation call.
 - After confirmed, must call **CreatOK Open Skills proxy** and wait until completion.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
-- Follow shared error-handling guidance in `../shared/references/common-rules.md`.
+- Follow shared guidance in `../shared/references/common-rules.md`.
 - Unless the user explicitly asks for a live-action shoot version, the model should assume the goal is to generate an AI video, not to prepare a human filming plan.
 
 ## Model Selection Rules
@@ -125,6 +126,7 @@ All artifacts under `video-generate/.artifacts/<run_id>/...`.
 - This skill submits generation jobs, polls status, and persists fixed-format outputs.
 - The model should not make the user restate their idea from scratch if the previous conversation already made the direction clear.
 - The model should optimize the brief for AI video generation by default, not for on-set filming.
+- Natural user confirmations such as "generate it", "make the video", "go ahead", or "use this version" should be treated as intent to use this skill, as long as the cost confirmation step is still satisfied.
 
 ## Handoff
 

@@ -7,10 +7,10 @@ help:
 
 
 test-e2e:
-	python3 tests/e2e_smoke.py
+	node tests/e2e_smoke.js
 
 
 test-analyze:
 	# For analyze, config.local.json is sufficient (env var optional)
 	CREATOK_BASE_URL="$(CREATOK_BASE_URL)" \
-		python3 skills/creatok:video-analyze/scripts/run.py --tiktok_url "https://www.tiktok.com/@midlife.nursing/video/7609047163334675742" --run_id "make-demo"
+		node skills/creatok:video-analyze/scripts/run.js --tiktok_url "https://www.tiktok.com/@midlife.nursing/video/7609047163334675742" --run_id "make-demo"

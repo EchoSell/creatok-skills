@@ -9,7 +9,7 @@ metadata:
     requires:
       env: []
       bins:
-        - python3
+        - node
     primaryEnv: CREATOK_API_KEY
   author: creatok
   version: "1.0.0"
@@ -38,6 +38,12 @@ metadata:
     - "make a non 1:1 version"
     - "rewrite this script for my product"
     - "help me recreate this video"
+    - "rewrite this for my product"
+    - "do a version for my product"
+    - "make me a version like this"
+    - "use this as a template for my product"
+    - "keep the structure but rewrite it"
+    - "change this into my version"
 ---
 
 # video-remix
@@ -52,7 +58,7 @@ metadata:
   - style differentiation
 - The model's final user-facing response should match the user's input language, default English.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
-- Follow shared error-handling guidance in `../shared/references/common-rules.md`.
+- Follow shared guidance in `../shared/references/common-rules.md`.
 
 ## Workflow
 
@@ -85,6 +91,7 @@ metadata:
 - The model should ask only for high-impact creative preferences when needed, not force a fixed template.
 - The model should usually show a useful first draft quickly instead of starting with many questions.
 - The first draft should default to an AI-generation-ready version.
+- The model should prefer a first draft wording that naturally sets up the next handoff, such as "If this direction looks good, I can generate the video next."
 - If the user wants to recreate or adapt a selling video, the model should first collect the user's own product context before writing a fitted script.
 - Start with only the most important product details:
   - product name
@@ -98,6 +105,10 @@ metadata:
 - Once the creative direction is clear enough, the model should hand off to `creatok:video-generate` using the script or brief already developed in the conversation.
 - The model should avoid asking the user to rewrite their request from scratch before generation.
 - The default handoff should be to AI generation, not a human shoot plan.
+- The model should phrase this in natural creator language that invites `creatok:video-generate`, for example:
+  - "If you want, I can generate this version now."
+  - "If this script looks right, I can turn it into a video next."
+  - "I can go ahead and make the video from this version."
 - Before handing off, the model should already reason about generation feasibility:
   - whether the plan fits within a single segment
   - whether it needs to be split into multiple segments

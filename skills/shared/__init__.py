@@ -1,1 +1,0 @@
-# creatok-skills shared package
