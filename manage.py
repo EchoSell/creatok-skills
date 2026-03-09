@@ -3,7 +3,7 @@
 
 Supports:
 - package: build .skill artifacts (zip) for distribution
-- install: install skills into both ~/.agents/skills and ~/.claude/skills
+- install: install skills into ~/.agents/skills, ~/.claude/skills, and ~/.codex/skills
 - update: package + install
 - sync-config: sync creatok-skills/config.local.json from a .env file (e.g. creatok/.env.dev)
 
@@ -35,12 +35,12 @@ from pathlib import Path
 from typing import List, Dict, Optional
 
 REPO_ROOT = Path(__file__).resolve().parent
-SKILLS_ROOT = REPO_ROOT
 PUBLISH_ROOT = REPO_ROOT / "skills"
 DIST_DIR = REPO_ROOT / "dist"
 DEFAULT_INSTALL_DIRS: List[Path] = [
     Path("~/.agents/skills").expanduser(),
     Path("~/.claude/skills").expanduser(),
+    Path("~/.codex/skills").expanduser(),
 ]
 
 OPENCLAW_PACKAGE_SKILL = Path(
@@ -48,9 +48,9 @@ OPENCLAW_PACKAGE_SKILL = Path(
 )
 
 SKILL_DIRS: List[str] = [
-    "video-analyze",
-    "video-generate",
-    "video-remix",
+    "creatok:video-analyze",
+    "creatok:video-generate",
+    "creatok:video-remix",
 ]
 SUPPORT_DIRS: List[str] = [
     "creatok_skills",
@@ -58,18 +58,8 @@ SUPPORT_DIRS: List[str] = [
 ]
 COPY_IGNORE = shutil.ignore_patterns(".DS_Store", "__pycache__", "*.pyc", ".artifacts")
 
-INSTALL_NAME_MAP: Dict[str, str] = {
-    "video-analyze": "creatok:video-analyze",
-    "video-generate": "creatok:video-generate",
-    "video-remix": "creatok:video-remix",
-}
-
 
 def _check_repo_root() -> None:
-    if not (SKILLS_ROOT / "video-analyze" / "SKILL.md").exists():
-        raise SystemExit(
-            "Run this from the creatok-skills repo root (expected video-analyze/SKILL.md)."
-        )
     if not (PUBLISH_ROOT / "creatok:video-analyze" / "SKILL.md").exists():
         raise SystemExit(
             "Missing skills/ publish directory. Expected skills/creatok:video-analyze/SKILL.md."
@@ -90,7 +80,7 @@ def package_all() -> None:
     DIST_DIR.mkdir(parents=True, exist_ok=True)
 
     for name in SKILL_DIRS:
-        src = SKILLS_ROOT / name
+        src = PUBLISH_ROOT / name
         if not src.exists():
             raise SystemExit(f"Missing skill dir: {src}")
         # package_skill.py <skill-folder> [outdir]
@@ -110,9 +100,9 @@ def _copy_install_payload(target_root: Path, include_runtime_config: bool) -> No
             shutil.rmtree(dst)
         shutil.copytree(src, dst, ignore=COPY_IGNORE)
 
-    for install_name in INSTALL_NAME_MAP.values():
-        src = PUBLISH_ROOT / install_name
-        dst = target_root / install_name
+    for skill_name in SKILL_DIRS:
+        src = PUBLISH_ROOT / skill_name
+        dst = target_root / skill_name
 
         if dst.exists():
             shutil.rmtree(dst)
@@ -120,7 +110,7 @@ def _copy_install_payload(target_root: Path, include_runtime_config: bool) -> No
 
     if include_runtime_config:
         # Also copy runtime config if present (local-only, gitignored)
-        cfg_src = SKILLS_ROOT / "config.local.json"
+        cfg_src = REPO_ROOT / "config.local.json"
         if cfg_src.exists():
             cfg_dst = target_root / "config.local.json"
             shutil.copyfile(cfg_src, cfg_dst)
@@ -198,7 +188,7 @@ def sync_config(env_path: Path) -> None:
 
     env = _parse_env_file(env_path)
 
-    cfg_path = SKILLS_ROOT / "config.local.json"
+    cfg_path = REPO_ROOT / "config.local.json"
     cfg: Dict[str, object] = {}
     if cfg_path.exists():
         try:

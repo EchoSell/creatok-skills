@@ -10,14 +10,15 @@ from unittest.mock import patch
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO_ROOT))
+SKILLS_ROOT = REPO_ROOT / "skills"
+sys.path.insert(0, str(SKILLS_ROOT))
 
 from creatok_skills.video_analyze import run_video_analyze
 from creatok_skills.video_generate import run_video_generate
 from creatok_skills.video_remix import VideoRemixResult, run_video_remix
 
-ANALYZE_SKILL_DIR = REPO_ROOT / "video-analyze"
-REMIX_SKILL_DIR = REPO_ROOT / "video-remix"
+ANALYZE_SKILL_DIR = SKILLS_ROOT / "creatok:video-analyze"
+REMIX_SKILL_DIR = SKILLS_ROOT / "creatok:video-remix"
 
 
 class FakeClient:
