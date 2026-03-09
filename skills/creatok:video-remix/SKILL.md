@@ -52,6 +52,7 @@ metadata:
   - style differentiation
 - The model's final user-facing response should match the user's input language, default English.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
+- Follow shared error-handling guidance in `../shared/references/common-rules.md`.
 
 ## Workflow
 

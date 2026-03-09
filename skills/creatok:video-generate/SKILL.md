@@ -49,6 +49,7 @@ metadata:
 - Must request **user confirmation** before triggering any paid/high-cost video generation call.
 - After confirmed, must call **CreatOK Open Skills proxy** and wait until completion.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
+- Follow shared error-handling guidance in `../shared/references/common-rules.md`.
 
 ## Model Selection Rules
 
