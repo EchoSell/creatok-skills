@@ -50,6 +50,36 @@ metadata:
 - After confirmed, must call **CreatOK Open Skills proxy** and wait until completion.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
 
+## Model Selection Rules
+
+- `Veo 3.1 Fast`
+  - actual model id: `veo-3.1-fast-exp`
+  - fastest and lowest-cost option
+  - best for product demos, short visual tests, and previews
+  - supports real-person reference images
+  - max video length: **8 seconds**
+
+- `Veo 3.1 Quality`
+  - actual model id: `veo-3.1-exp`
+  - medium-cost option
+  - best for formal product demos and higher-quality final clips
+  - supports real-person reference images
+  - max video length: **8 seconds**
+
+The model should recommend a model before generation instead of blindly using a default.
+The recommendation should follow these principles:
+
+- prefer `Veo 3.1 Fast` (`veo-3.1-fast-exp`) for previews, quick testing, and lightweight product demo clips
+- prefer `Veo 3.1 Quality` (`veo-3.1-exp`) for formal product demos and higher-quality final clips
+
+If a chosen plan conflicts with model limits, the model should explain the limitation, suggest a workable plan, and wait for user confirmation before generating.
+
+## Multi-Segment Rules
+
+- If the requested video is longer than the chosen model's maximum duration, the model should recommend splitting it into multiple segments.
+- If multi-segment generation is needed and the script includes a recurring human character, the model should tell the user that they need to upload a portrait / person reference and use a model that supports real-person reference images.
+- If the final video must be stitched from multiple generated clips, the model should explain that the user will need to assemble the clips afterward.
+
 ## Inputs to clarify (ask if missing)
 
 - ask only for what is still necessary to generate a good video
@@ -62,6 +92,8 @@ metadata:
 - Summarize:
   - model
   - ratio
+  - whether the plan is single-shot or multi-segment
+  - any important limitation such as duration cap, portrait requirement, or manual stitching afterward
   - estimated cost/credits if available
 - Ask for a simple confirmation in plain language, such as whether the user wants to start generation now.
 - Do **not** submit the generation task until user says yes.

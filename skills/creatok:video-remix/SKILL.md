@@ -94,6 +94,12 @@ metadata:
 4) If the user wants final generation
 - Once the creative direction is clear enough, the model should hand off to `creatok:video-generate` using the script or brief already developed in the conversation.
 - The model should avoid asking the user to rewrite their request from scratch before generation.
+- Before handing off, the model should already reason about generation feasibility:
+  - whether the plan fits within a single segment
+  - whether it needs to be split into multiple segments
+  - whether a recurring human character means the user needs to upload a portrait / person reference
+  - whether the selected generation path requires a model that supports real-person reference images
+- If the remix plan is longer than a model's maximum duration, the model should explain the tradeoff and suggest a segmented plan before calling `creatok:video-generate`.
 
 ## Artifacts
 

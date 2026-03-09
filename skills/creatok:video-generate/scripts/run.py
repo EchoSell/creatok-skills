@@ -28,6 +28,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--prompt", required=True)
     ap.add_argument("--ratio", default="9:16")
+    ap.add_argument("--model", default="veo-3.1-fast-exp")
     ap.add_argument("--run_id", required=True)
     ap.add_argument("--yes", action="store_true")
     ap.add_argument("--timeout_sec", type=float, default=600.0)
@@ -36,6 +37,7 @@ def main() -> int:
 
     if not args.yes:
         print("About to generate video via CreatOK Open Skills proxy.")
+        print(f"- model: {args.model}")
         print(f"- ratio: {args.ratio}")
         print(f"- prompt (first 120 chars): {args.prompt[:120]}")
         ok = input("Confirm to start generation? (yes/no): ").strip().lower()
@@ -46,6 +48,7 @@ def main() -> int:
     res = run_video_generate(
         prompt=args.prompt,
         ratio=args.ratio,
+        model=args.model,
         poll_interval=args.poll_interval,
         timeout_sec=args.timeout_sec,
     )
@@ -59,6 +62,7 @@ def main() -> int:
             {
                 "task_id": res.task_id,
                 "status": res.status,
+                "model": args.model,
                 "video_url": res.video_url,
                 "raw": res.raw,
             },
@@ -74,6 +78,7 @@ def main() -> int:
             [
                 "# Video Generate Result\n\n",
                 f"- run_id: `{args.run_id}`\n",
+                f"- model: `{args.model}`\n",
                 f"- status: `{res.status}`\n",
                 f"- task_id: `{res.task_id}`\n",
                 f"- video_url: {res.video_url or '(missing)'}\n",
