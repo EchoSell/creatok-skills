@@ -51,7 +51,6 @@ creatok:video-generate
 Set your CreatOK Open Skills API key:
 
 ```bash
-export CREATOK_BASE_URL="https://www.creatok.ai"
 export CREATOK_API_KEY="ok_xxx"
 ```
 
@@ -106,7 +105,6 @@ Why do I need to copy both `creatok_skills` and `shared`:
 My API key is configured but calls still fail:
 
 - Check `CREATOK_API_KEY`
-- Check `CREATOK_BASE_URL`
 - Check whether your machine can access [https://www.creatok.ai](https://www.creatok.ai)
 
 If you need to report an issue to an engineer, include the error message and the skill name you were using.

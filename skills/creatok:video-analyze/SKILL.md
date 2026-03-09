@@ -110,6 +110,10 @@ The next-step options should also reflect the inferred video type:
 - for selling videos, prioritize viewing the original script, viewing the original storyboard, adapting it to the user's own product, or making a differentiated version
 - for non-selling content, prioritize viewing the original script, viewing the original storyboard, or adapting the idea to the user's own topic
 
+Unless the user explicitly asks for a live-action shoot version, the model should treat recreation and follow-up generation as AI-generated video work by default.
+The default path is to help the user move toward an AI-generation-ready script or brief.
+After giving a useful AI-oriented version, the model may optionally ask whether the user also wants a live-action shoot version.
+
 If the reference appears to be a product-selling video and the user wants to recreate it, the model should first collect the user's own product context before drafting the recreated script.
 Ask only for the highest-impact details first, such as:
 

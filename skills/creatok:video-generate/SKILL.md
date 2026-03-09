@@ -1,7 +1,7 @@
 ---
 name: creatok:video-generate
 version: "1.0.0"
-description: 'This skill should be used when the user asks to generate a TikTok video, create a new video from a script, produce a selling video from a brief, turn an analyzed idea into a video, or generate a final version after remix. Generates TikTok-style videos through CreatOK''s remote generation API and is designed to carry forward the direction, script, and selling points already clarified earlier in the conversation.'
+description: 'This skill should be used when the user asks to generate a TikTok video, create a new video from a script, produce a selling video from a brief, turn an analyzed idea into a video, or generate a final version after remix. Generates TikTok-style videos through CreatOK''s generation API and is designed to carry forward the direction, script, and selling points already clarified earlier in the conversation.'
 license: Internal
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local video rendering packages required."
 metadata:
@@ -50,6 +50,7 @@ metadata:
 - After confirmed, must call **CreatOK Open Skills proxy** and wait until completion.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
 - Follow shared error-handling guidance in `../shared/references/common-rules.md`.
+- Unless the user explicitly asks for a live-action shoot version, the model should assume the goal is to generate an AI video, not to prepare a human filming plan.
 
 ## Model Selection Rules
 
@@ -86,6 +87,7 @@ If a chosen plan conflicts with model limits, the model should explain the limit
 - ask only for what is still necessary to generate a good video
 - prefer the direction, script, and selling points already established earlier in the conversation
 - if details are missing, ask one or two short follow-up questions instead of requesting a full brief again
+- prefer details that help AI generation directly, such as scene intent, visual style, pacing, product emphasis, and whether a person reference image is available
 
 ## Workflow
 
@@ -110,6 +112,7 @@ If a chosen plan conflicts with model limits, the model should explain the limit
   - `outputs/result.json` with `task_id/status/video_url/raw`
   - `outputs/result.md`
 - Return the final `video_url`.
+- After the AI version is complete, the model may optionally ask whether the user also wants a live-action shoot version of the same idea.
 
 ## Artifacts
 
@@ -121,6 +124,7 @@ All artifacts under `video-generate/.artifacts/<run_id>/...`.
 - If the creative direction is still fuzzy, the model can tighten it in the conversation before generating.
 - This skill submits generation jobs, polls status, and persists fixed-format outputs.
 - The model should not make the user restate their idea from scratch if the previous conversation already made the direction clear.
+- The model should optimize the brief for AI video generation by default, not for on-set filming.
 
 ## Handoff
 

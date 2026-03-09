@@ -71,6 +71,7 @@ metadata:
 3) Model output happens in the conversation
 - The model should read `outputs/remix_source.json`
 - The model should help the user choose a direction without over-constraining the process.
+- Unless the user explicitly asks for a live-action shoot version, the model should default to creating a script, storyboard, and visual direction that are intended for AI video generation rather than human filming.
 - Typical directions include:
   - stay closer to the original concept and execution
   - create a differentiated remix version
@@ -83,6 +84,7 @@ metadata:
   - the level of detail that is most helpful next: concept, outline, short script, storyboard, or shotlist
 - The model should ask only for high-impact creative preferences when needed, not force a fixed template.
 - The model should usually show a useful first draft quickly instead of starting with many questions.
+- The first draft should default to an AI-generation-ready version.
 - If the user wants to recreate or adapt a selling video, the model should first collect the user's own product context before writing a fitted script.
 - Start with only the most important product details:
   - product name
@@ -95,6 +97,7 @@ metadata:
 4) If the user wants final generation
 - Once the creative direction is clear enough, the model should hand off to `creatok:video-generate` using the script or brief already developed in the conversation.
 - The model should avoid asking the user to rewrite their request from scratch before generation.
+- The default handoff should be to AI generation, not a human shoot plan.
 - Before handing off, the model should already reason about generation feasibility:
   - whether the plan fits within a single segment
   - whether it needs to be split into multiple segments
@@ -111,4 +114,5 @@ Write under `video-remix/.artifacts/<run_id>/...`.
 - This skill should feel like a creative bridge between analysis and generation.
 - Prefer smooth continuation from the analyzed reference rather than making the user restate the whole idea.
 - For selling-video recreation, adapt the reference to the user's own product instead of drafting a generic copy first.
+- After producing an AI-generation-ready version, the model may optionally ask whether the user also wants a live-action shoot version.
 - Keep the interaction lightweight and practical for non-technical creator / seller users.
