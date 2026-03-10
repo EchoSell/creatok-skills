@@ -48,6 +48,8 @@ creatok:video-generate
 
 ## Configure Your API Key
 
+Generate your API key at [https://www.creatok.ai/app/user/api-keys](https://www.creatok.ai/app/user/api-keys).
+
 Set your CreatOK Open Skills API key:
 
 ```bash
@@ -105,6 +107,6 @@ Why do I need to copy `shared`:
 My API key is configured but calls still fail:
 
 - Check `CREATOK_API_KEY`
-- Check whether your machine can access [https://www.creatok.ai](https://www.creatok.ai)
+- Check whether your machine can access [https://www.creatok.ai/app/user/api-keys](https://www.creatok.ai/app/user/api-keys)
 
 If you need to report an issue to an engineer, include the error message and the skill name you were using.
