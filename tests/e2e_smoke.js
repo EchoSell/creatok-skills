@@ -9,10 +9,11 @@ const SKILLS_ROOT = path.join(REPO_ROOT, 'skills');
 const ANALYZE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok:video-analyze');
 const REMIX_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok:video-remix');
 const GENERATE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok:video-generate');
+const STATUS_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok:task-status');
 
 const { runVideoAnalyze } = require('../skills/shared/lib/video-analyze');
 const { runVideoRemix } = require('../skills/shared/lib/video-remix');
-const { runVideoGenerate } = require('../skills/shared/lib/video-generate');
+const { runVideoGenerate, runTaskStatus } = require('../skills/shared/lib/video-generate');
 
 class FakeClient {
   async analyze() {
@@ -42,11 +43,11 @@ class FakeClient {
     };
   }
 
-  async generate() {
+  async submitTask() {
     return { task_id: 'task_demo_123' };
   }
 
-  async generateStatus() {
+  async getTaskStatus() {
     return {
       status: 'succeeded',
       result: { video_url: 'https://example.com/generated.mp4' },
@@ -121,6 +122,56 @@ test('video-generate returns final url and writes artifacts', async () => {
     client: new FakeClient(),
     pollInterval: 0.01,
     timeoutSec: 1,
+  });
+
+  assert.equal(result.status, 'succeeded');
+  assert.equal(result.videoUrl, 'https://example.com/generated.mp4');
+  assert.equal(fs.existsSync(path.join(result.artifactsDir, 'outputs', 'result.json')), true);
+  const payload = JSON.parse(fs.readFileSync(path.join(result.artifactsDir, 'outputs', 'result.json'), 'utf8'));
+  assert.equal(payload.task_id, 'task_demo_123');
+  cleanup([runDir]);
+});
+
+test('video-generate persists task id even when polling fails', async () => {
+  const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-generate-error');
+  cleanup([runDir]);
+
+  class FailingStatusClient extends FakeClient {
+    async getTaskStatus() {
+      throw new Error('Temporary network error');
+    }
+  }
+
+  await assert.rejects(
+    () =>
+      runVideoGenerate({
+        prompt: 'A short TikTok-style demo video',
+        runId: 'smoke-generate-error',
+        skillDir: GENERATE_SKILL_DIR,
+        ratio: '9:16',
+        client: new FailingStatusClient(),
+        pollInterval: 0.01,
+        timeoutSec: 1,
+      }),
+    /Temporary network error/,
+  );
+
+  const payload = JSON.parse(fs.readFileSync(path.join(runDir, 'outputs', 'result.json'), 'utf8'));
+  assert.equal(payload.task_id, 'task_demo_123');
+  assert.equal(payload.status, 'submitted');
+  assert.equal(payload.error.message, 'Temporary network error');
+  cleanup([runDir]);
+});
+
+test('task-status can query existing task id', async () => {
+  const runDir = path.join(STATUS_SKILL_DIR, '.artifacts', 'smoke-status');
+  cleanup([runDir]);
+
+  const result = await runTaskStatus({
+    taskId: 'task_demo_123',
+    runId: 'smoke-status',
+    skillDir: STATUS_SKILL_DIR,
+    client: new FakeClient(),
   });
 
   assert.equal(result.status, 'succeeded');

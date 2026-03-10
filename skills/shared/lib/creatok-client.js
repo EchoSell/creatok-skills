@@ -50,25 +50,25 @@ class CreatokOpenSkillsClient {
     return payload.data || {};
   }
 
-  async generate(prompt, ratio, model) {
-    const payload = await this.requestJson('POST', `${this.cfg.baseUrl}/api/open/skills/generate`, {
+  async submitTask(prompt, ratio, model) {
+    const payload = await this.requestJson('POST', `${this.cfg.baseUrl}/api/open/skills/tasks`, {
       body: { prompt, ratio, model },
       timeoutSec: 60,
     });
     if (payload.code !== 0) {
-      throw new Error(`CreatOK generate failed: ${JSON.stringify(payload)}`);
+      throw new Error(`CreatOK task submission failed: ${JSON.stringify(payload)}`);
     }
     return payload.data || {};
   }
 
-  async generateStatus(taskId) {
+  async getTaskStatus(taskId) {
     const payload = await this.requestJson(
       'GET',
-      `${this.cfg.baseUrl}/api/open/skills/generate/status?task_id=${encodeURIComponent(taskId)}`,
+      `${this.cfg.baseUrl}/api/open/skills/tasks/status?task_id=${encodeURIComponent(taskId)}`,
       { timeoutSec: 60 },
     );
     if (payload.code !== 0) {
-      throw new Error(`CreatOK generate status failed: ${JSON.stringify(payload)}`);
+      throw new Error(`CreatOK task status failed: ${JSON.stringify(payload)}`);
     }
     return payload.data || {};
   }

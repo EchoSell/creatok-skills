@@ -7,7 +7,8 @@ compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installe
 metadata:
   openclaw:
     requires:
-      env: []
+      env:
+        - CREATOK_API_KEY
       bins:
         - node
     primaryEnv: CREATOK_API_KEY

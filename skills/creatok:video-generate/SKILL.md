@@ -7,7 +7,8 @@ compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installe
 metadata:
   openclaw:
     requires:
-      env: []
+      env:
+        - CREATOK_API_KEY
       bins:
         - node
     primaryEnv: CREATOK_API_KEY
@@ -39,6 +40,7 @@ metadata:
     - "use this script to generate"
     - "make the video now"
     - "make this into a video"
+    - "start this generation"
 ---
 
 # video-generate
@@ -103,15 +105,16 @@ If a chosen plan conflicts with model limits, the model should explain the limit
 - Do **not** submit the generation task until user says yes.
 
 2) Submit video generation
-- Call CreatOK: `POST /api/open/skills/generate`
+- Call CreatOK: `POST /api/open/skills/tasks`
 
 3) Poll status until completion
-- Call CreatOK: `GET /api/open/skills/generate/status?task_id=...`
+- Call CreatOK: `GET /api/open/skills/tasks/status?task_id=...`
 
 4) Persist artifacts + respond
 - Write:
   - `outputs/result.json` with `task_id/status/video_url/raw`
   - `outputs/result.md`
+- Persist the `task_id` immediately after submission, before waiting for the final status, so the user can recover the task later if the local process is interrupted.
 - Return the final `video_url`.
 - After the AI version is complete, the model may optionally ask whether the user also wants a live-action shoot version of the same idea.
 
@@ -132,3 +135,4 @@ All artifacts under `video-generate/.artifacts/<run_id>/...`.
 
 - When reached from `creatok:video-analyze`, the model should carry forward the chosen direction without making the user repeat it.
 - When reached from `creatok:video-remix`, the model should use the script or brief already developed in the conversation as the starting point for generation.
+- If generation was interrupted after submission, the model should help the user continue with `creatok:task-status` instead of restarting the job from scratch.

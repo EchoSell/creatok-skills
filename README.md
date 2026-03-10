@@ -44,6 +44,7 @@ After installation, you should see these skills:
 creatok:video-analyze
 creatok:video-remix
 creatok:video-generate
+creatok:task-status
 ```
 
 ## Configure Your API Key
@@ -84,6 +85,12 @@ Generate a new video:
 
 ```text
 Generate a TikTok-style video for a pet store opening. Make it upbeat and memorable.
+```
+
+Check an existing task:
+
+```text
+Check this video generation task for me: task_xxx
 ```
 
 ## What These Skills Are Good For
