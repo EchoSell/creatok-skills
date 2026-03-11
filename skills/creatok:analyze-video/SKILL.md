@@ -1,7 +1,7 @@
 ---
 name: creatok:analyze-video
 version: "1.0.0"
-description: 'This skill should be used when the user asks to analyze a TikTok video, break down a viral TikTok, understand why a TikTok script works, view the original script, view the original storyboard, study a selling video, review a TikTok hook, or adapt a reference TikTok into their own version. Analyzes TikTok videos through CreatOK''s remote analyze interface and helps creators or sellers understand hook, structure, selling logic, proof, CTA, original script, and original storyboard in simple business language.'
+description: "This skill should be used when the user asks to analyze a TikTok video, break down a viral TikTok, understand why a TikTok script works, view the original script, view the original storyboard, study a selling video, review a TikTok hook, or adapt a reference TikTok into their own version. Analyzes TikTok videos through CreatOK's remote analyze interface and helps creators or sellers understand hook, structure, selling logic, proof, CTA, original script, and original storyboard in simple business language."
 license: Internal
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local ffmpeg or vision setup required."
 metadata:
@@ -95,6 +95,8 @@ The model can infer items such as:
 - highlights with timestamps
 - storyboard / reusable template
 - final written analysis or recommendations
+- why the video can or cannot go viral from a short-form content operations perspective
+- how the video works from a selling conversion perspective, including script, cover, audience, and conversion logic
 
 The analysis emphasis should follow the inferred video type:
 
@@ -104,6 +106,11 @@ The analysis emphasis should follow the inferred video type:
 - for review / comparison videos, focus on credibility, differentiation, and decision-making signals
 - for non-selling content, focus on hook, pacing, emotional pull, and what structure can be reused without forcing a selling analysis
 
+Two especially useful framing options for the final user-facing analysis are:
+
+- explain why the video can or cannot become a strong short-form performer from an operator's point of view
+- break down the script, cover, audience, and conversion logic from a selling and transaction point of view
+
 ## Next-Step Handoff
 
 After presenting the analysis, the model should naturally guide the user into the next step.
@@ -112,7 +119,6 @@ Prefer a light transition such as:
 - show the original script extracted from the reference
 - show the original storyboard / scene breakdown from the reference
 - break it down into reusable templates for storyboards and sales video structures
-- create a differentiated remix version
 - rewrite this into a version for the user's own product
 - turn the analyzed direction into an AI-generation-ready version
 
