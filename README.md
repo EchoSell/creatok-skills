@@ -3,8 +3,9 @@
 A set of skills for TikTok creators, sellers, and operators to:
 
 - analyze videos
-- rewrite reference videos
+- recreate reference videos
 - generate new videos
+- check existing task status
 
 These skills work through CreatOK's remote APIs. You only need to install them and configure your API key.
 
@@ -41,10 +42,10 @@ cp -R skills/* ~/.codex/skills/
 After installation, you should see these skills:
 
 ```bash
-creatok:video-analyze
-creatok:video-remix
-creatok:video-generate
-creatok:task-status
+creatok:analyze-video
+creatok:recreate-video
+creatok:generate-video
+creatok:check-task
 ```
 
 ## Configure Your API Key
@@ -97,9 +98,9 @@ Check this video generation task for me: task_xxx
 
 - analyzing selling videos
 - breaking down viral scripts
-- recreating or remixing competitor videos
-- adapting a reference video to your own product
+- recreating competitor or reference videos for your own product
 - generating a final video from an approved script or brief
+- recovering an interrupted generation task without starting over
 
 ## FAQ
 

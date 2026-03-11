@@ -2,7 +2,7 @@
 const path = require('node:path');
 const readline = require('node:readline/promises');
 const { stdin, stdout } = require('node:process');
-const { runVideoGenerate } = require('../../shared/lib/video-generate');
+const { runGenerateVideo } = require('../../shared/lib/generate-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
 
@@ -65,7 +65,7 @@ async function main() {
     }
   }
 
-  const result = await runVideoGenerate({
+  const result = await runGenerateVideo({
     prompt: args.prompt,
     runId: args.runId,
     skillDir: SKILL_ROOT,

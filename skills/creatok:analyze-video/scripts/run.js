@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const path = require('node:path');
-const { runVideoAnalyze } = require('../../shared/lib/video-analyze');
+const { runAnalyzeVideo } = require('../../shared/lib/analyze-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
 
@@ -22,7 +22,7 @@ async function main() {
     process.exit(2);
   }
 
-  const result = await runVideoAnalyze({
+  const result = await runAnalyzeVideo({
     tiktokUrl: args.tiktokUrl,
     runId: args.runId,
     skillDir: SKILL_ROOT,

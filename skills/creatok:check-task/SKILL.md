@@ -1,7 +1,7 @@
 ---
-name: creatok:task-status
+name: creatok:check-task
 version: "1.0.0"
-description: 'This skill should be used when the user asks to check a video generation task, look up a previous generation status, continue checking a task after an interruption, or retrieve the final video URL from an existing task id. Checks existing CreatOK tasks through the generation status API and helps users recover from interrupted task flows without starting over. It currently focuses on video generation tasks.'
+description: 'This skill should be used when the user asks to check a TikTok video generation task, look up a previous generation status, continue checking a task after an interruption, or retrieve the final video URL from an existing task id. Checks existing CreatOK tasks through the generation status API and helps users recover from interrupted TikTok video generation flows without starting over.'
 license: Internal
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local video rendering packages required."
 metadata:
@@ -17,8 +17,10 @@ metadata:
   geo-relevance: "low"
   tags:
     - tiktok
-    - task-status
+    - check-task
     - ai-video
+    - tiktok-task
+    - video-generation-status
     - generation-recovery
     - creator-workflow
     - seller-workflow
@@ -26,16 +28,19 @@ metadata:
     - video-url
   triggers:
     - "check this video task"
+    - "check my TikTok video task"
     - "check generation status"
+    - "check my video generation task"
     - "look up this task id"
     - "continue checking this video"
+    - "did my TikTok video finish"
     - "did my video finish"
     - "check this task"
     - "get the video url from this task"
     - "resume checking generation"
 ---
 
-# task-status
+# check-task
 
 ## Constraints
 
@@ -45,7 +50,7 @@ metadata:
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
 - Follow shared guidance in `../shared/references/common-rules.md`.
 - Input: an existing `task_id` from a previous task request.
-- Artifacts must be written under `task-status/.artifacts/<run_id>/...`.
+- Artifacts must be written under `check-task/.artifacts/<run_id>/...`.
 
 ## Workflow
 
@@ -69,4 +74,4 @@ metadata:
 
 - This skill only checks an existing task.
 - It should not ask the user to restate the creative brief if a `task_id` is already available.
-- When paired with `creatok:video-generate`, it should help the user recover from interrupted generation flows. The naming stays generic so it can cover more task types later.
+- When paired with `creatok:generate-video`, it should help the user recover from interrupted generation flows. The naming stays generic so it can cover more task types later.

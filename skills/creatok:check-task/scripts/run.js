@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const path = require('node:path');
-const { runTaskStatus } = require('../../shared/lib/video-generate');
+const { runCheckTask } = require('../../shared/lib/generate-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
 
@@ -38,7 +38,7 @@ async function main() {
     process.exit(2);
   }
 
-  const result = await runTaskStatus({
+  const result = await runCheckTask({
     taskId: args.taskId,
     runId: args.runId,
     skillDir: SKILL_ROOT,

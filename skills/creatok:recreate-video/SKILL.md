@@ -1,7 +1,7 @@
 ---
-name: creatok:video-remix
+name: creatok:recreate-video
 version: "1.0.0"
-description: 'This skill should be used when the user asks to recreate a TikTok video, make a similar TikTok, adapt a reference video to their own product, rewrite a selling video, make a non-1:1 remix, or turn a viral video into their own version. Helps TikTok creators and sellers turn a reference video into a product-fit or style-fit version with light follow-up questions, smooth handoff from analysis, and minimal repeated input.'
+description: 'This skill should be used when the user asks to recreate a TikTok video, rewrite a TikTok for their own product, make a similar TikTok, adapt a reference video to their own product, rewrite a selling video, make a non-1:1 remix, or turn a viral video into their own version. Helps TikTok creators and sellers turn a reference video into a product-fit or style-fit version with light follow-up questions, smooth handoff from analysis, and minimal repeated input.'
 license: Internal
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local video analysis setup required."
 metadata:
@@ -17,8 +17,10 @@ metadata:
   geo-relevance: "low"
   tags:
     - tiktok
-    - video-remix
     - recreate-video
+    - video-recreation
+    - tiktok-rewrite
+    - tiktok-remix
     - selling-video
     - script-rewrite
     - storyboard-rewrite
@@ -30,15 +32,18 @@ metadata:
     - ugc
   triggers:
     - "recreate this TikTok"
+    - "rewrite this TikTok for my product"
     - "make a similar video"
     - "rewrite this selling video"
     - "adapt this video to my product"
+    - "make a similar TikTok for my product"
     - "make a remix of this video"
     - "make this in my own style"
     - "turn this viral video into my version"
     - "make a non 1:1 version"
     - "rewrite this script for my product"
     - "help me recreate this video"
+    - "rewrite this tiktok video"
     - "rewrite this for my product"
     - "do a version for my product"
     - "make me a version like this"
@@ -47,7 +52,7 @@ metadata:
     - "change this into my version"
 ---
 
-# video-remix
+# recreate-video
 
 ## Constraints
 
@@ -64,11 +69,11 @@ metadata:
 ## Workflow
 
 1) Analyze reference video
-- Reuse the `video-analyze` workflow.
+- Reuse the `analyze-video` workflow.
 - Gather enough reference context for the model to understand what makes the source video work.
 
 2) Write source artifacts for the model
-- `outputs/remix_source.json`
+- `outputs/recreate_source.json`
 - Include:
   - reference TikTok URL
   - analyze result payload
@@ -76,7 +81,7 @@ metadata:
   - optional user constraints such as angle / brand / style
 
 3) Model output happens in the conversation
-- The model should read `outputs/remix_source.json`
+- The model should read `outputs/recreate_source.json`
 - The model should help the user choose a direction without over-constraining the process.
 - Unless the user explicitly asks for a live-action shoot version, the model should default to creating a script, storyboard, and visual direction that are intended for AI video generation rather than human filming.
 - Typical directions include:
@@ -103,10 +108,10 @@ metadata:
 - The model should avoid making the user restate information that was already clear from the previous analysis or conversation.
 
 4) If the user wants final generation
-- Once the creative direction is clear enough, the model should hand off to `creatok:video-generate` using the script or brief already developed in the conversation.
+- Once the creative direction is clear enough, the model should hand off to `creatok:generate-video` using the script or brief already developed in the conversation.
 - The model should avoid asking the user to rewrite their request from scratch before generation.
 - The default handoff should be to AI generation, not a human shoot plan.
-- The model should phrase this in natural creator language that invites `creatok:video-generate`, for example:
+- The model should phrase this in natural creator language that invites `creatok:generate-video`, for example:
   - "If you want, I can generate this version now."
   - "If this script looks right, I can turn it into a video next."
   - "I can go ahead and make the video from this version."
@@ -115,11 +120,11 @@ metadata:
   - whether it needs to be split into multiple segments
   - whether a recurring human character means the user needs to upload a portrait / person reference
   - whether the selected generation path requires a model that supports real-person reference images
-- If the remix plan is longer than a model's maximum duration, the model should explain the tradeoff and suggest a segmented plan before calling `creatok:video-generate`.
+- If the remix plan is longer than a model's maximum duration, the model should explain the tradeoff and suggest a segmented plan before calling `creatok:generate-video`.
 
 ## Artifacts
 
-Write under `video-remix/.artifacts/<run_id>/...`.
+Write under `recreate-video/.artifacts/<run_id>/...`.
 
 ## Notes
 

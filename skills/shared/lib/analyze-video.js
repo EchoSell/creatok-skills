@@ -1,7 +1,7 @@
 const { artifactsForRun } = require('./artifacts');
 const { defaultClient } = require('./creatok-client');
 
-async function runVideoAnalyze({ tiktokUrl, runId, skillDir, client = defaultClient() }) {
+async function runAnalyzeVideo({ tiktokUrl, runId, skillDir, client = defaultClient() }) {
   const artifacts = artifactsForRun(skillDir, runId);
   artifacts.ensure();
 
@@ -33,7 +33,7 @@ async function runVideoAnalyze({ tiktokUrl, runId, skillDir, client = defaultCli
 
   const result = {
     run_id: runId,
-    skill: 'creatok:video-analyze',
+    skill: 'creatok:analyze-video',
     platform: 'tiktok',
     session,
     video_uid: videoUid,
@@ -74,5 +74,5 @@ async function runVideoAnalyze({ tiktokUrl, runId, skillDir, client = defaultCli
 }
 
 module.exports = {
-  runVideoAnalyze,
+  runAnalyzeVideo,
 };

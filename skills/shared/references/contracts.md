@@ -1,30 +1,31 @@
 # Agent Skills Contracts (shared)
 
-This folder defines *minimal* shared contracts for the 3 business skills:
-- creatok:video-analyze
-- creatok:video-generate
-- creatok:video-remix
+This folder defines *minimal* shared contracts for the main business skills:
+- creatok:analyze-video
+- creatok:generate-video
+- creatok:recreate-video
+- creatok:check-task
 
 Keep this small. The goal is portability.
 
 ## Terminology
 
 - **Run**: one end-to-end user request execution.
-- **Artifacts**: files produced during a run (transcript, frames, raw JSON outputs, final video URL).
+- **Artifacts**: files produced during a run (transcript, vision result, raw JSON outputs, final video URL).
 
 ## Artifact layout
 
 Write all outputs under:
 
-`creatok-skills/.artifacts/<run_id>/...`
+`<skill>/.artifacts/<run_id>/...`
 
 Recommended structure:
 
 ```
 <run_id>/
   input/                # copied/derived inputs (optional)
-  frames/               # extracted frames
   transcript/           # transcript json/txt
+  vision/               # normalized vision result
   outputs/              # final json/markdown outputs
   logs/                 # tool logs
 ```
@@ -40,12 +41,12 @@ Common fields:
 ```json
 {
   "run_id": "...",
-  "skill": "creatok:video-analyze|creatok:video-generate|creatok:video-remix",
+  "skill": "creatok:analyze-video|creatok:generate-video|creatok:recreate-video|creatok:check-task",
   "language": "en",
   "platform": "tiktok",
   "artifacts": [
     {"type": "file", "name": "transcript", "path": "..."},
-    {"type": "file", "name": "frames", "path": "..."},
+    {"type": "file", "name": "vision", "path": "..."},
     {"type": "url", "name": "final_video", "url": "..."}
   ]
 }

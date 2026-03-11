@@ -1,7 +1,7 @@
 const { artifactsForRun } = require('./artifacts');
-const { runVideoAnalyze } = require('./video-analyze');
+const { runAnalyzeVideo } = require('./analyze-video');
 
-async function runVideoRemix({
+async function runRecreateVideo({
   tiktokUrl,
   runId,
   skillDir,
@@ -9,7 +9,7 @@ async function runVideoRemix({
   angle = null,
   brand = null,
   style = null,
-  analyzeRunner = runVideoAnalyze,
+  analyzeRunner = runAnalyzeVideo,
 }) {
   const artifacts = artifactsForRun(skillDir, runId);
   artifacts.ensure();
@@ -21,7 +21,7 @@ async function runVideoRemix({
     skillDir: analyzeSkillDir,
   });
 
-  const remixSource = {
+  const recreateSource = {
     reference: { tiktok_url: tiktokUrl },
     constraints: { angle, brand, style },
     analyze_run_id: analyzeResult.runId,
@@ -29,7 +29,7 @@ async function runVideoRemix({
     analyze_result: analyzeResult.result,
   };
 
-  artifacts.writeJson('outputs/remix_source.json', remixSource);
+  artifacts.writeJson('outputs/recreate_source.json', recreateSource);
 
   return {
     runId,
@@ -38,5 +38,5 @@ async function runVideoRemix({
 }
 
 module.exports = {
-  runVideoRemix,
+  runRecreateVideo,
 };

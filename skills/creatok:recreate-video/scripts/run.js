@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 const path = require('node:path');
-const { runVideoRemix } = require('../../shared/lib/video-remix');
+const { runRecreateVideo } = require('../../shared/lib/recreate-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
-const ANALYZE_SKILL_ROOT = path.resolve(SKILL_ROOT, '..', 'creatok:video-analyze');
+const ANALYZE_SKILL_ROOT = path.resolve(SKILL_ROOT, '..', 'creatok:analyze-video');
 
 function parseArgs(argv) {
   const args = {};
@@ -26,7 +26,7 @@ async function main() {
     process.exit(2);
   }
 
-  const result = await runVideoRemix({
+  const result = await runRecreateVideo({
     tiktokUrl: args.tiktokUrl,
     runId: args.runId,
     skillDir: SKILL_ROOT,

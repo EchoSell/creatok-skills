@@ -1,5 +1,5 @@
 ---
-name: creatok:video-analyze
+name: creatok:analyze-video
 version: "1.0.0"
 description: 'This skill should be used when the user asks to analyze a TikTok video, break down a viral TikTok, understand why a TikTok script works, view the original script, view the original storyboard, study a selling video, review a TikTok hook, or adapt a reference TikTok into their own version. Analyzes TikTok videos through CreatOK''s remote analyze interface and helps creators or sellers understand hook, structure, selling logic, proof, CTA, original script, and original storyboard in simple business language.'
 license: Internal
@@ -17,6 +17,7 @@ metadata:
   geo-relevance: "low"
   tags:
     - tiktok
+    - tiktok-analysis
     - video-analysis
     - selling-video
     - script-analysis
@@ -30,8 +31,10 @@ metadata:
     - ugc
   triggers:
     - "analyze this TikTok video"
+    - "analyze this TikTok"
     - "analyze this video"
     - "break down this TikTok"
+    - "tiktok video analysis"
     - "why does this TikTok work"
     - "show me the original script"
     - "show me the original storyboard"
@@ -44,7 +47,7 @@ metadata:
     - "show me the script and help me rewrite it"
 ---
 
-# video-analyze
+# analyze-video
 
 ## Constraints
 
@@ -54,7 +57,7 @@ metadata:
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
 - Follow shared guidance in `../shared/references/common-rules.md`.
 - Input: **TikTok URL**.
-- Artifacts must be written under `video-analyze/.artifacts/<run_id>/...`.
+- Artifacts must be written under `analyze-video/.artifacts/<run_id>/...`.
 
 ## What to produce (minimum)
 
@@ -114,7 +117,7 @@ Prefer a light transition such as:
 - turn the analyzed direction into an AI-generation-ready version
 
 The model should keep this handoff flexible and concise rather than forcing a rigid workflow.
-The model should prefer prompts that naturally invite the user's next reply to match `creatok:video-remix`, for example:
+The model should prefer prompts that naturally invite the user's next reply to match `creatok:recreate-video`, for example:
 
 - "I can rewrite this into a version for your product."
 - "I can make you a similar version with a different angle."
@@ -147,7 +150,7 @@ The model should not ask for a long form, a detailed brief, or a large batch of 
 1. **Create run folder**
 
 - Use user-provided `run_id`
-- Create `video-analyze/.artifacts/<run_id>/{input,transcript,vision,outputs,logs}`
+- Create `analyze-video/.artifacts/<run_id>/{input,transcript,vision,outputs,logs}`
 
 2. **Call remote analyze**
 

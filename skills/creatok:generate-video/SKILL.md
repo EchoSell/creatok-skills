@@ -1,7 +1,7 @@
 ---
-name: creatok:video-generate
+name: creatok:generate-video
 version: "1.0.0"
-description: 'This skill should be used when the user asks to generate a TikTok video, create a new video from a script, produce a selling video from a brief, turn an analyzed idea into a video, or generate a final version after remix. Generates TikTok-style videos through CreatOK''s generation API and is designed to carry forward the direction, script, and selling points already clarified earlier in the conversation.'
+description: 'This skill should be used when the user asks to generate a TikTok video, create a TikTok ad, create a new video from a script, produce a selling video from a brief, turn an analyzed idea into a video, or generate a final version after remix. Generates TikTok-style videos through CreatOK''s generation API and is designed to carry forward the direction, script, and selling points already clarified earlier in the conversation.'
 license: Internal
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local video rendering packages required."
 metadata:
@@ -17,8 +17,10 @@ metadata:
   geo-relevance: "low"
   tags:
     - tiktok
-    - video-generate
+    - generate-video
     - ai-video
+    - tiktok-ad
+    - tiktok-product-video
     - selling-video
     - video-creation
     - creator-workflow
@@ -31,8 +33,11 @@ metadata:
   triggers:
     - "generate a TikTok video"
     - "create a TikTok video"
+    - "create a TikTok ad"
     - "turn this script into a video"
+    - "make a TikTok selling video"
     - "create a selling video"
+    - "create a TikTok product video"
     - "generate a video from this brief"
     - "start video generation"
     - "generate it now"
@@ -43,7 +48,7 @@ metadata:
     - "start this generation"
 ---
 
-# video-generate
+# generate-video
 
 ## Constraints
 
@@ -120,11 +125,11 @@ If a chosen plan conflicts with model limits, the model should explain the limit
 
 ## Artifacts
 
-All artifacts under `video-generate/.artifacts/<run_id>/...`.
+All artifacts under `generate-video/.artifacts/<run_id>/...`.
 
 ## Thin Client Boundary
 
-- Prefer using a prompt or brief that already came from `creatok:video-analyze` or `creatok:video-remix`.
+- Prefer using a prompt or brief that already came from `creatok:analyze-video` or `creatok:recreate-video`.
 - If the creative direction is still fuzzy, the model can tighten it in the conversation before generating.
 - This skill submits generation jobs, polls status, and persists fixed-format outputs.
 - The model should not make the user restate their idea from scratch if the previous conversation already made the direction clear.
@@ -133,6 +138,6 @@ All artifacts under `video-generate/.artifacts/<run_id>/...`.
 
 ## Handoff
 
-- When reached from `creatok:video-analyze`, the model should carry forward the chosen direction without making the user repeat it.
-- When reached from `creatok:video-remix`, the model should use the script or brief already developed in the conversation as the starting point for generation.
-- If generation was interrupted after submission, the model should help the user continue with `creatok:task-status` instead of restarting the job from scratch.
+- When reached from `creatok:analyze-video`, the model should carry forward the chosen direction without making the user repeat it.
+- When reached from `creatok:recreate-video`, the model should use the script or brief already developed in the conversation as the starting point for generation.
+- If generation was interrupted after submission, the model should help the user continue with `creatok:check-task` instead of restarting the job from scratch.

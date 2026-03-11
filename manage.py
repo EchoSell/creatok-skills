@@ -48,9 +48,9 @@ OPENCLAW_PACKAGE_SKILL = Path(
 )
 
 SKILL_DIRS: List[str] = [
-    "creatok:video-analyze",
-    "creatok:video-generate",
-    "creatok:video-remix",
+    "creatok:analyze-video",
+    "creatok:generate-video",
+    "creatok:recreate-video",
 ]
 SUPPORT_DIRS: List[str] = [
     "shared",
@@ -59,9 +59,9 @@ COPY_IGNORE = shutil.ignore_patterns(".DS_Store", "__pycache__", "*.pyc", ".arti
 
 
 def _check_repo_root() -> None:
-    if not (PUBLISH_ROOT / "creatok:video-analyze" / "SKILL.md").exists():
+    if not (PUBLISH_ROOT / "creatok:analyze-video" / "SKILL.md").exists():
         raise SystemExit(
-            "Missing skills/ publish directory. Expected skills/creatok:video-analyze/SKILL.md."
+            "Missing skills/ publish directory. Expected skills/creatok:analyze-video/SKILL.md."
         )
 
 
