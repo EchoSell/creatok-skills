@@ -8,11 +8,10 @@
 
 ## Local development
 
-1. Ensure CreatOK is reachable (default: https://www.creatok.ai)
+1. Ensure you have a valid CreatOK Open Skills API key.
 2. Set:
 
 ```bash
-export CREATOK_BASE_URL="https://www.creatok.ai"
 export CREATOK_API_KEY="ok_..."
 ```
 

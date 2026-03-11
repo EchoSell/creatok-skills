@@ -198,11 +198,10 @@ def sync_config(env_path: Path) -> None:
 
     # CreatOK proxy (required)
     creatok = cfg.get("creatok", {}) if isinstance(cfg.get("creatok"), dict) else {}
-    base_url = env.get("CREATOK_BASE_URL") or env.get("NEXT_PUBLIC_BASE_URL") or creatok.get("baseUrl") or "https://www.creatok.ai"
     open_key = env.get("CREATOK_API_KEY") or creatok.get("apiKey") or ""
 
     cfg["creatok"] = {
-        "baseUrl": base_url,
+        "baseUrl": "https://www.creatok.ai",
         "apiKey": open_key,
     }
 

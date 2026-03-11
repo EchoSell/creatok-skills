@@ -9,15 +9,10 @@ function managedSkillsRoot() {
   return path.resolve(skillsRoot(), '..');
 }
 
-function repoRoot() {
-  return path.resolve(managedSkillsRoot(), '..');
-}
-
 function loadLocalConfig() {
   const candidates = [
     path.join(skillsRoot(), 'config.local.json'),
     path.join(managedSkillsRoot(), 'config.local.json'),
-    path.join(repoRoot(), 'config.local.json'),
   ];
 
   for (const configPath of candidates) {
@@ -31,7 +26,6 @@ function loadLocalConfig() {
 
 function getCreatokConfig() {
   const cfg = loadLocalConfig().creatok || {};
-  const baseUrl = process.env.CREATOK_BASE_URL || cfg.baseUrl || 'https://www.creatok.ai';
   const apiKey = process.env.CREATOK_API_KEY || cfg.apiKey;
 
   if (!apiKey) {
@@ -41,7 +35,7 @@ function getCreatokConfig() {
   }
 
   return {
-    baseUrl: String(baseUrl).replace(/\/$/, ''),
+    baseUrl: 'https://www.creatok.ai',
     openSkillsKey: String(apiKey),
   };
 }
@@ -50,6 +44,5 @@ module.exports = {
   getCreatokConfig,
   loadLocalConfig,
   managedSkillsRoot,
-  repoRoot,
   skillsRoot,
 };
