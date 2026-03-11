@@ -3,7 +3,7 @@ const path = require('node:path');
 const { runRecreateVideo } = require('../../shared/lib/recreate-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
-const ANALYZE_SKILL_ROOT = path.resolve(SKILL_ROOT, '..', 'creatok:analyze-video');
+const ANALYZE_SKILL_ROOT = path.resolve(SKILL_ROOT, '..', 'creatok-analyze-video');
 
 function parseArgs(argv) {
   const args = {};

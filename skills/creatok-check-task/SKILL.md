@@ -1,5 +1,5 @@
 ---
-name: creatok:check-task
+name: creatok-check-task
 version: "1.0.0"
 description: 'This skill should be used when the user asks to check a TikTok video generation task, look up a previous generation status, continue checking a task after an interruption, or retrieve the final video URL from an existing task id. Checks existing CreatOK tasks through the generation status API and helps users recover from interrupted TikTok video generation flows without starting over.'
 license: Internal
@@ -7,8 +7,7 @@ compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installe
 metadata:
   openclaw:
     requires:
-      env:
-        - CREATOK_API_KEY
+      env: []
       bins:
         - node
     primaryEnv: CREATOK_API_KEY
@@ -74,4 +73,4 @@ metadata:
 
 - This skill only checks an existing task.
 - It should not ask the user to restate the creative brief if a `task_id` is already available.
-- When paired with `creatok:generate-video`, it should help the user recover from interrupted generation flows. The naming stays generic so it can cover more task types later.
+- When paired with `creatok-generate-video`, it should help the user recover from interrupted generation flows. The naming stays generic so it can cover more task types later.

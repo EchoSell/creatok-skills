@@ -1,5 +1,5 @@
 ---
-name: creatok:analyze-video
+name: creatok-analyze-video
 version: "1.0.0"
 description: "This skill should be used when the user asks to analyze a TikTok video, break down a viral TikTok, understand why a TikTok script works, view the original script, view the original storyboard, study a selling video, review a TikTok hook, or adapt a reference TikTok into their own version. Analyzes TikTok videos through CreatOK's remote analyze interface and helps creators or sellers understand hook, structure, selling logic, proof, CTA, original script, and original storyboard in simple business language."
 license: Internal
@@ -7,8 +7,7 @@ compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installe
 metadata:
   openclaw:
     requires:
-      env:
-        - CREATOK_API_KEY
+      env: []
       bins:
         - node
     primaryEnv: CREATOK_API_KEY
@@ -123,7 +122,7 @@ Prefer a light transition such as:
 - turn the analyzed direction into an AI-generation-ready version
 
 The model should keep this handoff flexible and concise rather than forcing a rigid workflow.
-The model should prefer prompts that naturally invite the user's next reply to match `creatok:recreate-video`, for example:
+The model should prefer prompts that naturally invite the user's next reply to match `creatok-recreate-video`, for example:
 
 - "I can rewrite this into a version for your product."
 - "I can make you a similar version with a different angle."

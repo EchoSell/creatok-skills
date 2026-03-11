@@ -6,10 +6,10 @@ const path = require('node:path');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SKILLS_ROOT = path.join(REPO_ROOT, 'skills');
-const ANALYZE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok:analyze-video');
-const REMIX_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok:recreate-video');
-const GENERATE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok:generate-video');
-const STATUS_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok:check-task');
+const ANALYZE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-analyze-video');
+const REMIX_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-recreate-video');
+const GENERATE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-generate-video');
+const STATUS_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-check-task');
 
 const { runAnalyzeVideo } = require('../skills/shared/lib/analyze-video');
 const { runRecreateVideo } = require('../skills/shared/lib/recreate-video');
@@ -77,7 +77,7 @@ test('analyze-video writes expected artifacts', async () => {
   assert.equal(fs.existsSync(path.join(result.artifactsDir, 'vision', 'vision.json')), true);
 
   const payload = JSON.parse(fs.readFileSync(path.join(result.artifactsDir, 'outputs', 'result.json'), 'utf8'));
-  assert.equal(payload.skill, 'creatok:analyze-video');
+  assert.equal(payload.skill, 'creatok-analyze-video');
   assert.equal(payload.platform, 'tiktok');
   assert.ok(payload.transcript.segments_count >= 1);
   cleanup([runDir]);

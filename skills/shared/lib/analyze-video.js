@@ -33,7 +33,7 @@ async function runAnalyzeVideo({ tiktokUrl, runId, skillDir, client = defaultCli
 
   const result = {
     run_id: runId,
-    skill: 'creatok:analyze-video',
+    skill: 'creatok-analyze-video',
     platform: 'tiktok',
     session,
     video_uid: videoUid,

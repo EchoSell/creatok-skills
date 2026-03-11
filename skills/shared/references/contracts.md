@@ -1,10 +1,10 @@
 # Agent Skills Contracts (shared)
 
 This folder defines *minimal* shared contracts for the main business skills:
-- creatok:analyze-video
-- creatok:generate-video
-- creatok:recreate-video
-- creatok:check-task
+- creatok-analyze-video
+- creatok-generate-video
+- creatok-recreate-video
+- creatok-check-task
 
 Keep this small. The goal is portability.
 
@@ -41,7 +41,7 @@ Common fields:
 ```json
 {
   "run_id": "...",
-  "skill": "creatok:analyze-video|creatok:generate-video|creatok:recreate-video|creatok:check-task",
+  "skill": "creatok-analyze-video|creatok-generate-video|creatok-recreate-video|creatok-check-task",
   "language": "en",
   "platform": "tiktok",
   "artifacts": [

@@ -42,10 +42,10 @@ cp -R skills/* ~/.codex/skills/
 After installation, you should see these skills:
 
 ```bash
-creatok:analyze-video
-creatok:recreate-video
-creatok:generate-video
-creatok:check-task
+creatok-analyze-video
+creatok-recreate-video
+creatok-generate-video
+creatok-check-task
 ```
 
 ## Configure Your API Key
