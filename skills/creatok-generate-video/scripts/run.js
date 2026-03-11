@@ -2,7 +2,7 @@
 const path = require('node:path');
 const readline = require('node:readline/promises');
 const { stdin, stdout } = require('node:process');
-const { runGenerateVideo, runGenerateVideoStatus } = require('../../creatok-shared/lib/generate-video');
+const { runGenerateVideo, runGenerateVideoStatus } = require('../lib/generate-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
 

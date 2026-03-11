@@ -59,7 +59,7 @@ metadata:
 - Must request **user confirmation** before triggering any paid/high-cost video generation call.
 - After confirmed, must call **CreatOK Open Skills proxy** and wait until completion.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
-- Follow shared guidance in `../creatok-shared/references/common-rules.md`.
+- Follow shared guidance in `./references/common-rules.md`.
 - Unless the user explicitly asks for a live-action shoot version, the model should assume the goal is to generate an AI video, not to prepare a human filming plan.
 
 ## Model Selection Rules

@@ -52,9 +52,6 @@ SKILL_DIRS: List[str] = [
     "creatok-generate-video",
     "creatok-recreate-video",
 ]
-SUPPORT_DIRS: List[str] = [
-    "creatok-shared",
-]
 COPY_IGNORE = shutil.ignore_patterns(".DS_Store", "__pycache__", "*.pyc", ".artifacts")
 
 
@@ -91,13 +88,15 @@ def package_all() -> None:
 def _copy_install_payload(target_root: Path, include_runtime_config: bool) -> None:
     target_root.mkdir(parents=True, exist_ok=True)
 
-    for name in SUPPORT_DIRS:
-        src = PUBLISH_ROOT / name
-        dst = target_root / name
-
-        if dst.exists():
-            shutil.rmtree(dst)
-        shutil.copytree(src, dst, ignore=COPY_IGNORE)
+    current_skill_names = set(SKILL_DIRS)
+    for entry in target_root.iterdir():
+        if not entry.is_dir():
+            continue
+        if not entry.name.startswith("creatok-"):
+            continue
+        if entry.name in current_skill_names:
+            continue
+        shutil.rmtree(entry)
 
     for skill_name in SKILL_DIRS:
         src = PUBLISH_ROOT / skill_name

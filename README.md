@@ -106,9 +106,9 @@ I installed the skills but cannot see them yet:
 
 - Restart OpenClaw, Claude Code, or Codex and try again.
 
-Why do I need to copy `creatok-shared`:
+Why can each skill be installed on its own:
 
-- It contains shared runtime code used by all three skills. If you only copy a single skill directory, imports may fail at runtime.
+- Each skill now includes its own runtime files, so it can be reviewed and packaged without depending on a sibling shared directory.
 
 My API key is configured but calls still fail:
 

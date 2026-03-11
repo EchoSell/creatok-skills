@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const path = require('node:path');
-const { runRecreateVideo } = require('../../creatok-shared/lib/recreate-video');
+const { runRecreateVideo } = require('../lib/recreate-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
 const ANALYZE_SKILL_ROOT = path.resolve(SKILL_ROOT, '..', 'creatok-analyze-video');

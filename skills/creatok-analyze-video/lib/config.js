@@ -2,16 +2,21 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 function skillsRoot() {
-  return path.resolve(__dirname, '..', '..');
+  return path.resolve(__dirname, '..');
+}
+
+function managedSkillsRoot() {
+  return path.resolve(skillsRoot(), '..');
 }
 
 function repoRoot() {
-  return path.resolve(skillsRoot(), '..');
+  return path.resolve(managedSkillsRoot(), '..');
 }
 
 function loadLocalConfig() {
   const candidates = [
     path.join(skillsRoot(), 'config.local.json'),
+    path.join(managedSkillsRoot(), 'config.local.json'),
     path.join(repoRoot(), 'config.local.json'),
   ];
 
@@ -44,6 +49,7 @@ function getCreatokConfig() {
 module.exports = {
   getCreatokConfig,
   loadLocalConfig,
+  managedSkillsRoot,
   repoRoot,
   skillsRoot,
 };
