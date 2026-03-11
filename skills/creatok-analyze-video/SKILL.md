@@ -88,7 +88,10 @@ Useful internal categories include:
 - non-selling content such as pet, entertainment, lifestyle, or story content
 
 The model does not need to expose the category label unless it clearly helps the user.
-The model can infer items such as:
+
+## Analysis Angles
+
+The model can infer and explain items such as:
 
 - hook / value / proof / CTA
 - highlights with timestamps
@@ -96,6 +99,11 @@ The model can infer items such as:
 - final written analysis or recommendations
 - why the video can or cannot go viral from a short-form content operations perspective
 - how the video works from a selling conversion perspective, including script, cover, audience, and conversion logic
+
+Two especially useful framing options for the final user-facing analysis are:
+
+- explain why the video can or cannot become a strong short-form performer from an operator's point of view
+- break down the script, cover, audience, and conversion logic from a selling and transaction point of view
 
 The analysis emphasis should follow the inferred video type:
 
@@ -105,10 +113,11 @@ The analysis emphasis should follow the inferred video type:
 - for review / comparison videos, focus on credibility, differentiation, and decision-making signals
 - for non-selling content, focus on hook, pacing, emotional pull, and what structure can be reused without forcing a selling analysis
 
-Two especially useful framing options for the final user-facing analysis are:
+## Output Preferences
 
-- explain why the video can or cannot become a strong short-form performer from an operator's point of view
-- break down the script, cover, audience, and conversion logic from a selling and transaction point of view
+- When the user asks for the original script, the default format should be a timestamped line-by-line script.
+- Prefer a clean readable structure such as one spoken line per row with its corresponding time range.
+- Keep the final response easy for creators and sellers to scan and reuse.
 
 ## Next-Step Handoff
 
@@ -136,8 +145,6 @@ The next-step options should also reflect the inferred video type:
 Unless the user explicitly asks for a live-action shoot version, the model should treat recreation and follow-up generation as AI-generated video work by default.
 The default path is to help the user move toward an AI-generation-ready script or brief.
 After giving a useful AI-oriented version, the model may optionally ask whether the user also wants a live-action shoot version.
-
-## Selling Video Recreation
 
 If the reference appears to be a product-selling video and the user wants to recreate it, the model should first collect the user's own product context before drafting the recreated script.
 Ask only for the highest-impact details first, such as:
