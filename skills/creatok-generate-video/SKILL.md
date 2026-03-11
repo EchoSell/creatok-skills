@@ -1,7 +1,7 @@
 ---
 name: creatok-generate-video
 version: "1.0.0"
-description: 'This skill should be used when the user asks to generate a TikTok video, create a TikTok ad, create a new video from a script, produce a selling video from a brief, turn an analyzed idea into a video, or generate a final version after remix. Generates TikTok-style videos through CreatOK''s generation API and is designed to carry forward the direction, script, and selling points already clarified earlier in the conversation.'
+description: 'This skill should be used when the user asks to generate a TikTok video, create a TikTok ad, create a new video from a script, produce a selling video from a brief, turn an analyzed idea into a video, generate a final version after remix, or check and continue an existing video generation task. Generates TikTok-style videos through CreatOK''s generation API and can also recover interrupted generation flows from an existing task id.'
 license: Internal
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local video rendering packages required."
 metadata:
@@ -45,6 +45,9 @@ metadata:
     - "make the video now"
     - "make this into a video"
     - "start this generation"
+    - "check this video generation task"
+    - "did my video finish"
+    - "check this task id"
 ---
 
 # generate-video
@@ -122,6 +125,17 @@ If a chosen plan conflicts with model limits, the model should explain the limit
 - Return the final `video_url`.
 - After the AI version is complete, the model may optionally ask whether the user also wants a live-action shoot version of the same idea.
 
+## Existing Task Recovery
+
+- If the user already has a `task_id`, this skill should continue from that task instead of starting a new one.
+- In recovery mode, do not ask the user to restate the prompt or creative brief if the task id is already available.
+- The model can either:
+  - check the current task status once
+  - or continue waiting and polling if the user wants to keep checking
+- If the task succeeded, return the final `video_url`.
+- If the task is still queued or running, explain that clearly and offer to keep checking.
+- If the task failed, explain the failure message if available and suggest the next best step.
+
 ## Artifacts
 
 All artifacts under `generate-video/.artifacts/<run_id>/...`.
@@ -139,4 +153,4 @@ All artifacts under `generate-video/.artifacts/<run_id>/...`.
 
 - When reached from `creatok-analyze-video`, the model should carry forward the chosen direction without making the user repeat it.
 - When reached from `creatok-recreate-video`, the model should use the script or brief already developed in the conversation as the starting point for generation.
-- If generation was interrupted after submission, the model should help the user continue with `creatok-check-task` instead of restarting the job from scratch.
+- If generation was interrupted after submission, the model should help the user continue inside `creatok-generate-video` with the existing `task_id` instead of restarting the job from scratch.

@@ -5,7 +5,6 @@ A set of skills for TikTok creators, sellers, and operators to:
 - analyze videos
 - recreate reference videos
 - generate new videos
-- check existing task status
 
 These skills work through CreatOK's remote APIs. You only need to install them and configure your API key.
 
@@ -45,7 +44,6 @@ After installation, you should see these skills:
 creatok-analyze-video
 creatok-recreate-video
 creatok-generate-video
-creatok-check-task
 ```
 
 ## Configure Your API Key
@@ -88,7 +86,7 @@ Generate a new video:
 Generate a TikTok-style video for a pet store opening. Make it upbeat and memorable.
 ```
 
-Check an existing task:
+Check an existing generation task:
 
 ```text
 Check this video generation task for me: task_xxx

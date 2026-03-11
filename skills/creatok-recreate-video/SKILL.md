@@ -119,7 +119,7 @@ metadata:
   - whether it needs to be split into multiple segments
   - whether a recurring human character means the user needs to upload a portrait / person reference
   - whether the selected generation path requires a model that supports real-person reference images
-- If the remix plan is longer than a model's maximum duration, the model should explain the tradeoff and suggest a segmented plan before calling `creatok-generate-video`.
+- If the recreate plan is longer than a model's maximum duration, the model should explain the tradeoff and suggest a segmented plan before calling `creatok-generate-video`.
 
 ## Artifacts
 

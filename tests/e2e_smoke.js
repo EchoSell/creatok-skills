@@ -9,11 +9,10 @@ const SKILLS_ROOT = path.join(REPO_ROOT, 'skills');
 const ANALYZE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-analyze-video');
 const REMIX_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-recreate-video');
 const GENERATE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-generate-video');
-const STATUS_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-check-task');
 
 const { runAnalyzeVideo } = require('../skills/creatok-shared/lib/analyze-video');
 const { runRecreateVideo } = require('../skills/creatok-shared/lib/recreate-video');
-const { runGenerateVideo, runCheckTask } = require('../skills/creatok-shared/lib/generate-video');
+const { runGenerateVideo, runGenerateVideoStatus } = require('../skills/creatok-shared/lib/generate-video');
 
 class FakeClient {
   async analyze() {
@@ -163,14 +162,14 @@ test('generate-video persists task id even when polling fails', async () => {
   cleanup([runDir]);
 });
 
-test('check-task can query existing task id', async () => {
-  const runDir = path.join(STATUS_SKILL_DIR, '.artifacts', 'smoke-status');
+test('generate-video can query existing task id', async () => {
+  const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-status');
   cleanup([runDir]);
 
-  const result = await runCheckTask({
+  const result = await runGenerateVideoStatus({
     taskId: 'task_demo_123',
     runId: 'smoke-status',
-    skillDir: STATUS_SKILL_DIR,
+    skillDir: GENERATE_SKILL_DIR,
     client: new FakeClient(),
   });
 

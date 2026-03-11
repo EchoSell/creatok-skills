@@ -2,7 +2,7 @@
 const path = require('node:path');
 const readline = require('node:readline/promises');
 const { stdin, stdout } = require('node:process');
-const { runGenerateVideo } = require('../../creatok-shared/lib/generate-video');
+const { runGenerateVideo, runGenerateVideoStatus } = require('../../creatok-shared/lib/generate-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
 
@@ -21,9 +21,14 @@ function parseArgs(argv) {
       args.yes = true;
       continue;
     }
+    if (key === '--wait') {
+      args.wait = true;
+      continue;
+    }
 
     const value = argv[i + 1];
     if (key === '--prompt') args.prompt = value;
+    if (key === '--task_id') args.taskId = value;
     if (key === '--ratio') args.ratio = value;
     if (key === '--model') args.model = value;
     if (key === '--run_id') args.runId = value;
@@ -52,9 +57,24 @@ async function confirmGeneration(args) {
 
 async function main() {
   const args = parseArgs(process.argv);
-  if (!args.prompt || !args.runId) {
-    console.error('Usage: run.js --prompt <prompt> --run_id <run_id> [--ratio 9:16] [--model veo-3.1-fast-exp] [--yes]');
+  if (!args.runId || (!args.prompt && !args.taskId)) {
+    console.error('Usage: run.js --run_id <run_id> (--prompt <prompt> [--ratio 9:16] [--model veo-3.1-fast-exp] [--yes] | --task_id <task_id> [--wait] [--model veo-3.1-fast-exp])');
     process.exit(2);
+  }
+
+  if (args.taskId) {
+    const result = await runGenerateVideoStatus({
+      taskId: args.taskId,
+      runId: args.runId,
+      skillDir: SKILL_ROOT,
+      model: args.model || null,
+      wait: Boolean(args.wait),
+      timeoutSec: args.timeoutSec,
+      pollInterval: args.pollInterval,
+    });
+
+    console.log(JSON.stringify({ ok: true, run_id: result.runId, task_id: result.taskId, status: result.status, video_url: result.videoUrl }));
+    process.exit(result.status === 'succeeded' ? 0 : 1);
   }
 
   if (!args.yes) {

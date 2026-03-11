@@ -55,7 +55,7 @@ async function pollGenerate(client, taskId, pollInterval = 3, timeoutSec = 600) 
   }
 }
 
-async function runCheckTask({
+async function runGenerateVideoStatus({
   taskId,
   runId,
   skillDir,
@@ -178,5 +178,5 @@ module.exports = {
   persistGenerateArtifacts,
   pollGenerate,
   runGenerateVideo,
-  runCheckTask,
+  runGenerateVideoStatus,
 };
