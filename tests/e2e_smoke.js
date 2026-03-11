@@ -11,9 +11,9 @@ const REMIX_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-recreate-video');
 const GENERATE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-generate-video');
 const STATUS_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-check-task');
 
-const { runAnalyzeVideo } = require('../skills/shared/lib/analyze-video');
-const { runRecreateVideo } = require('../skills/shared/lib/recreate-video');
-const { runGenerateVideo, runCheckTask } = require('../skills/shared/lib/generate-video');
+const { runAnalyzeVideo } = require('../skills/creatok-shared/lib/analyze-video');
+const { runRecreateVideo } = require('../skills/creatok-shared/lib/recreate-video');
+const { runGenerateVideo, runCheckTask } = require('../skills/creatok-shared/lib/generate-video');
 
 class FakeClient {
   async analyze() {

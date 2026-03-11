@@ -47,7 +47,7 @@ metadata:
 - This skill checks an existing task. It does **not** create a new one.
 - The model's final user-facing response should match the user's input language, default **English**.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
-- Follow shared guidance in `../shared/references/common-rules.md`.
+- Follow shared guidance in `../creatok-shared/references/common-rules.md`.
 - Input: an existing `task_id` from a previous task request.
 - Artifacts must be written under `check-task/.artifacts/<run_id>/...`.
 

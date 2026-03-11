@@ -53,7 +53,7 @@ SKILL_DIRS: List[str] = [
     "creatok-recreate-video",
 ]
 SUPPORT_DIRS: List[str] = [
-    "shared",
+    "creatok-shared",
 ]
 COPY_IGNORE = shutil.ignore_patterns(".DS_Store", "__pycache__", "*.pyc", ".artifacts")
 

@@ -108,7 +108,7 @@ I installed the skills but cannot see them yet:
 
 - Restart OpenClaw, Claude Code, or Codex and try again.
 
-Why do I need to copy `shared`:
+Why do I need to copy `creatok-shared`:
 
 - It contains shared runtime code used by all three skills. If you only copy a single skill directory, imports may fail at runtime.
 

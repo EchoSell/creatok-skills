@@ -54,7 +54,7 @@ metadata:
 - Analyze source: **CreatOK `/api/open/skills/analyze`**. The remote service is responsible for transcript and vision extraction.
 - The model's final user-facing response should match the user's input language, default **English**.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
-- Follow shared guidance in `../shared/references/common-rules.md`.
+- Follow shared guidance in `../creatok-shared/references/common-rules.md`.
 - Input: **TikTok URL**.
 - Artifacts must be written under `analyze-video/.artifacts/<run_id>/...`.
 
@@ -62,7 +62,7 @@ metadata:
 
 Create:
 
-- `outputs/result.json` (machine-readable, see `../shared/references/contracts.md`)
+- `outputs/result.json` (machine-readable, see `../creatok-shared/references/contracts.md`)
 
 The script gathers structured source data returned by CreatOK:
 

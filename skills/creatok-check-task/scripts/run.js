@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const path = require('node:path');
-const { runCheckTask } = require('../../shared/lib/generate-video');
+const { runCheckTask } = require('../../creatok-shared/lib/generate-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
 
