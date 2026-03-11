@@ -25,4 +25,3 @@ export CREATOK_API_KEY="ok_..."
 ## Security
 
 - Never commit secrets.
-- `config.local.json` is ignored by git.
