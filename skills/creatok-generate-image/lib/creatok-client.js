@@ -39,24 +39,17 @@ class CreatokOpenSkillsClient {
     }
   }
 
-  async analyze(tiktokUrl, timeoutSec = 180) {
-    const payload = await this.requestJson('POST', `${this.cfg.baseUrl}/api/open/skills/analyze`, {
-      body: { tiktok_url: tiktokUrl },
-      timeoutSec,
-    });
-    if (payload.code !== 0) {
-      throw new Error(`CreatOK analyze failed: ${JSON.stringify(payload)}`);
-    }
-    return payload.data || {};
-  }
+  async submitImageTask({ prompt, model, resolution, n, aspectRatio, referenceImages }) {
+    const body = { prompt, model, resolution, n };
+    if (aspectRatio) body.aspect_ratio = aspectRatio;
+    if (referenceImages && referenceImages.length > 0) body.reference_images = referenceImages;
 
-  async submitTask(prompt, ratio, model) {
-    const payload = await this.requestJson('POST', `${this.cfg.baseUrl}/api/open/skills/tasks`, {
-      body: { prompt, ratio, model },
+    const payload = await this.requestJson('POST', `${this.cfg.baseUrl}/api/open/skills/image-generation`, {
+      body,
       timeoutSec: 60,
     });
     if (payload.code !== 0) {
-      throw new Error(`CreatOK task submission failed: ${JSON.stringify(payload)}`);
+      throw new Error(`CreatOK image task submission failed: ${JSON.stringify(payload)}`);
     }
     return payload.data || {};
   }
@@ -64,7 +57,7 @@ class CreatokOpenSkillsClient {
   async getTaskStatus(taskId) {
     const payload = await this.requestJson(
       'GET',
-      `${this.cfg.baseUrl}/api/open/skills/tasks/status?task_id=${encodeURIComponent(taskId)}&task_type=video_generation`,
+      `${this.cfg.baseUrl}/api/open/skills/tasks/status?task_id=${encodeURIComponent(taskId)}&task_type=image_generation`,
       { timeoutSec: 60 },
     );
     if (payload.code !== 0) {

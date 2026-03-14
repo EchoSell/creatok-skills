@@ -5,6 +5,7 @@ A set of skills for TikTok creators, sellers, and operators to:
 - analyze videos
 - recreate reference videos
 - generate new videos
+- generate AI images
 
 These skills work through CreatOK's remote APIs. You only need to install them and configure your API key.
 
@@ -44,6 +45,7 @@ After installation, you should see these skills:
 creatok-analyze-video
 creatok-recreate-video
 creatok-generate-video
+creatok-generate-image
 ```
 
 ## Configure Your API Key
@@ -86,6 +88,12 @@ Generate a new video:
 Generate a TikTok-style video for a pet store opening. Make it upbeat and memorable.
 ```
 
+Generate an AI image:
+
+```text
+Generate an image of a sunset over mountains in 4K resolution
+```
+
 Check an existing generation task:
 
 ```text
@@ -98,6 +106,7 @@ Check this video generation task for me: task_xxx
 - breaking down viral scripts
 - recreating competitor or reference videos for your own product
 - generating a final video from an approved script or brief
+- generating AI images for marketing, social media, or creative projects
 - recovering an interrupted generation task without starting over
 
 ## FAQ

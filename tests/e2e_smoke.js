@@ -9,10 +9,12 @@ const SKILLS_ROOT = path.join(REPO_ROOT, 'skills');
 const ANALYZE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-analyze-video');
 const REMIX_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-recreate-video');
 const GENERATE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-generate-video');
+const IMAGE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-generate-image');
 
 const { runAnalyzeVideo } = require('../skills/creatok-analyze-video/lib/analyze-video');
 const { runRecreateVideo } = require('../skills/creatok-recreate-video/lib/recreate-video');
 const { runGenerateVideo, runGenerateVideoStatus } = require('../skills/creatok-generate-video/lib/generate-video');
+const { runGenerateImage, runGenerateImageStatus } = require('../skills/creatok-generate-image/lib/generate-image');
 
 class FakeClient {
   async analyze() {
@@ -175,6 +177,138 @@ test('generate-video can query existing task id', async () => {
 
   assert.equal(result.status, 'succeeded');
   assert.equal(result.videoUrl, 'https://example.com/generated.mp4');
+  assert.equal(fs.existsSync(path.join(result.artifactsDir, 'outputs', 'result.json')), true);
+  cleanup([runDir]);
+});
+
+class FakeImageClient {
+  async submitImageTask() {
+    return { task_id: 'img_task_demo_456' };
+  }
+
+  async getTaskStatus() {
+    return {
+      status: 'succeeded',
+      result: {
+        images: [
+          { url: 'https://example.com/image1.png', thumbnail_url: 'https://example.com/image1_thumb.png' },
+          { url: 'https://example.com/image2.png', thumbnail_url: 'https://example.com/image2_thumb.png' },
+        ],
+      },
+    };
+  }
+}
+
+test('generate-image returns images and writes artifacts', async () => {
+  const runDir = path.join(IMAGE_SKILL_DIR, '.artifacts', 'smoke-image');
+  cleanup([runDir]);
+
+  const result = await runGenerateImage({
+    prompt: 'A product photo of a skincare bottle on white background',
+    runId: 'smoke-image',
+    skillDir: IMAGE_SKILL_DIR,
+    model: 'nano-banana-pro',
+    resolution: '2K',
+    n: 2,
+    client: new FakeImageClient(),
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.equal(result.status, 'succeeded');
+  assert.equal(result.images.length, 2);
+  assert.equal(result.images[0].url, 'https://example.com/image1.png');
+
+  const resultPath = path.join(result.artifactsDir, 'outputs', 'result.json');
+  assert.equal(fs.existsSync(resultPath), true);
+  const payload = JSON.parse(fs.readFileSync(resultPath, 'utf8'));
+  assert.equal(payload.task_id, 'img_task_demo_456');
+  assert.equal(payload.model, 'nano-banana-pro');
+  assert.equal(payload.resolution, '2K');
+  assert.equal(payload.n, 2);
+
+  assert.equal(fs.existsSync(path.join(result.artifactsDir, 'outputs', 'result.md')), true);
+  cleanup([runDir]);
+});
+
+test('generate-image persists task id even when polling fails', async () => {
+  const runDir = path.join(IMAGE_SKILL_DIR, '.artifacts', 'smoke-image-error');
+  cleanup([runDir]);
+
+  class FailingImageStatusClient extends FakeImageClient {
+    async getTaskStatus() {
+      throw new Error('Temporary network error');
+    }
+  }
+
+  await assert.rejects(
+    () =>
+      runGenerateImage({
+        prompt: 'A product photo',
+        runId: 'smoke-image-error',
+        skillDir: IMAGE_SKILL_DIR,
+        model: 'nano-banana-pro',
+        resolution: '2K',
+        n: 1,
+        client: new FailingImageStatusClient(),
+        pollInterval: 0.01,
+        timeoutSec: 1,
+      }),
+    /Temporary network error/,
+  );
+
+  const payload = JSON.parse(
+    fs.readFileSync(path.join(runDir, 'outputs', 'result.json'), 'utf8'),
+  );
+  assert.equal(payload.task_id, 'img_task_demo_456');
+  assert.equal(payload.status, 'submitted');
+  assert.equal(payload.error.message, 'Temporary network error');
+  cleanup([runDir]);
+});
+
+test('generate-image validates unsupported model', async () => {
+  await assert.rejects(
+    () =>
+      runGenerateImage({
+        prompt: 'test',
+        runId: 'smoke-image-invalid-model',
+        skillDir: IMAGE_SKILL_DIR,
+        model: 'gpt-image-1',
+        resolution: '2K',
+        client: new FakeImageClient(),
+      }),
+    /Unsupported model/,
+  );
+});
+
+test('generate-image validates resolution incompatible with seedream', async () => {
+  await assert.rejects(
+    () =>
+      runGenerateImage({
+        prompt: 'test',
+        runId: 'smoke-image-invalid-res',
+        skillDir: IMAGE_SKILL_DIR,
+        model: 'seedream-5.0-lite',
+        resolution: '1K',
+        client: new FakeImageClient(),
+      }),
+    /does not support resolution 1K/,
+  );
+});
+
+test('generate-image can query existing task id', async () => {
+  const runDir = path.join(IMAGE_SKILL_DIR, '.artifacts', 'smoke-image-status');
+  cleanup([runDir]);
+
+  const result = await runGenerateImageStatus({
+    taskId: 'img_task_demo_456',
+    runId: 'smoke-image-status',
+    skillDir: IMAGE_SKILL_DIR,
+    client: new FakeImageClient(),
+  });
+
+  assert.equal(result.status, 'succeeded');
+  assert.equal(result.images.length, 2);
   assert.equal(fs.existsSync(path.join(result.artifactsDir, 'outputs', 'result.json')), true);
   cleanup([runDir]);
 });
