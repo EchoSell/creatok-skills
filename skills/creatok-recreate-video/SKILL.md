@@ -1,7 +1,7 @@
 ---
 name: creatok-recreate-video
 version: "1.0.0"
-description: 'This skill should be used when the user asks to recreate a TikTok video, rewrite a TikTok for their own product, make a similar TikTok, adapt a reference video to their own product, rewrite a selling video, make a non-1:1 remix, or turn a viral video into their own version. Helps TikTok creators and sellers turn a reference video into a product-fit or style-fit version with light follow-up questions, smooth handoff from analysis, and minimal repeated input.'
+description: Use when recreating, rewriting, or remixing a TikTok reference video into a new product-fit version.
 license: Internal
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local video analysis setup required."
 metadata:
@@ -17,38 +17,22 @@ metadata:
   tags:
     - tiktok
     - recreate-video
-    - video-recreation
     - tiktok-rewrite
     - tiktok-remix
     - selling-video
-    - script-rewrite
-    - storyboard-rewrite
+    - product-adaptation
     - creator-workflow
     - seller-workflow
-    - product-adaptation
-    - viral-video
-    - ecommerce
-    - ugc
   triggers:
     - "recreate this TikTok"
     - "rewrite this TikTok for my product"
-    - "make a similar video"
     - "rewrite this selling video"
     - "adapt this video to my product"
-    - "make a similar TikTok for my product"
     - "make a remix of this video"
-    - "make this in my own style"
     - "turn this viral video into my version"
     - "make a non 1:1 version"
-    - "rewrite this script for my product"
     - "help me recreate this video"
-    - "rewrite this tiktok video"
-    - "rewrite this for my product"
-    - "do a version for my product"
-    - "make me a version like this"
     - "use this as a template for my product"
-    - "keep the structure but rewrite it"
-    - "change this into my version"
 ---
 
 # recreate-video

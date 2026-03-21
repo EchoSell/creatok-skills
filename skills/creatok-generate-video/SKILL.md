@@ -1,7 +1,7 @@
 ---
 name: creatok-generate-video
 version: "1.0.0"
-description: 'This skill should be used when the user asks to generate a TikTok video, create a TikTok ad, create a new video from a script, produce a selling video from a brief, turn an analyzed idea into a video, generate a final version after remix, or check and continue an existing video generation task. Generates TikTok-style videos through CreatOK''s generation API and can also recover interrupted generation flows from an existing task id.'
+description: Use when generating, resuming, or checking TikTok videos, ads, or selling videos.
 license: Internal
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local video rendering packages required."
 metadata:
@@ -19,34 +19,20 @@ metadata:
     - generate-video
     - ai-video
     - tiktok-ad
-    - tiktok-product-video
     - selling-video
-    - video-creation
+    - sora
+    - sora-2
     - creator-workflow
     - seller-workflow
-    - ecommerce
-    - ugc
-    - prompt-to-video
-    - script-to-video
-    - final-generation
   triggers:
     - "generate a TikTok video"
-    - "create a TikTok video"
     - "create a TikTok ad"
     - "turn this script into a video"
-    - "make a TikTok selling video"
     - "create a selling video"
-    - "create a TikTok product video"
-    - "generate a video from this brief"
+    - "use sora 2"
     - "start video generation"
-    - "generate it now"
-    - "go ahead and generate"
-    - "use this script to generate"
-    - "make the video now"
-    - "make this into a video"
     - "start this generation"
     - "check this video generation task"
-    - "did my video finish"
     - "check this task id"
 ---
 
@@ -63,6 +49,20 @@ metadata:
 - Unless the user explicitly asks for a live-action shoot version, the model should assume the goal is to generate an AI video, not to prepare a human filming plan.
 
 ## Model Selection Rules
+
+- `Sora 2`
+  - actual model id: `sora-2`
+  - supports reference images, but only the first reference image is used
+  - supported resolutions: **720p**
+  - supported duration: **12s**
+  - supported aspect ratios: **9:16**, **16:9**
+
+- `Sora 2 Exp`
+  - actual model id: `sora-2-exp`
+  - supports reference images, but only the first reference image is used
+  - supported resolutions: **720p**
+  - supported duration: **15s**
+  - supported aspect ratios: **9:16**, **16:9**
 
 - `Veo 3.1 Fast`
   - actual model id: `veo-3.1-fast-exp`
@@ -81,6 +81,8 @@ metadata:
 The model should recommend a model before generation instead of blindly using a default.
 The recommendation should follow these principles:
 
+- prefer `Sora 2` (`sora-2`) for 12-second generation
+- prefer `Sora 2 Exp` (`sora-2-exp`) for 15-second generation
 - prefer `Veo 3.1 Fast` (`veo-3.1-fast-exp`) for previews, quick testing, and lightweight product demo clips
 - prefer `Veo 3.1 Quality` (`veo-3.1-exp`) for formal product demos and higher-quality final clips
 
@@ -97,7 +99,7 @@ If a chosen plan conflicts with model limits, the model should explain the limit
 - ask only for what is still necessary to generate a good video
 - prefer the direction, script, and selling points already established earlier in the conversation
 - if details are missing, ask one or two short follow-up questions instead of requesting a full brief again
-- prefer details that help AI generation directly, such as scene intent, visual style, pacing, product emphasis, and whether a person reference image is available
+- prefer details that help AI generation directly, such as scene intent, visual style, pacing, product emphasis, whether a person reference image is available, and whether the user wants `Sora 2`, `Sora 2 Exp`, or a Veo model
 
 ## Workflow
 
@@ -105,7 +107,9 @@ If a chosen plan conflicts with model limits, the model should explain the limit
 - Summarize:
   - model
   - ratio
+  - resolution and duration, if relevant to the chosen model
   - whether the plan is single-shot or multi-segment
+  - whether a reference image is being used, and if so that only the first one will be applied for Sora
   - any important limitation such as duration cap, portrait requirement, or manual stitching afterward
   - estimated cost/credits if available
 - Ask for a simple confirmation in plain language, such as whether the user wants to start generation now.

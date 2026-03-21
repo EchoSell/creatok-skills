@@ -1,7 +1,7 @@
 ---
 name: creatok-analyze-video
 version: "1.0.0"
-description: "This skill should be used when the user asks to analyze a TikTok video, break down a viral TikTok, understand why a TikTok script works, view the original script, view the original storyboard, study a selling video, review a TikTok hook, or adapt a reference TikTok into their own version. Analyzes TikTok videos through CreatOK's remote analyze interface and helps creators or sellers understand hook, structure, selling logic, proof, CTA, original script, and original storyboard in simple business language."
+description: Use when analyzing a TikTok video or breaking down its script and structure.
 license: Internal
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local ffmpeg or vision setup required."
 metadata:
@@ -18,32 +18,19 @@ metadata:
     - tiktok
     - tiktok-analysis
     - video-analysis
-    - selling-video
     - script-analysis
     - storyboard
     - hook-analysis
     - creator-workflow
     - seller-workflow
-    - viral-video
-    - remix-prep
-    - ecommerce
-    - ugc
   triggers:
     - "analyze this TikTok video"
     - "analyze this TikTok"
-    - "analyze this video"
     - "break down this TikTok"
-    - "tiktok video analysis"
     - "why does this TikTok work"
     - "show me the original script"
     - "show me the original storyboard"
     - "analyze this selling video"
-    - "analyze this hook"
-    - "study this viral video"
-    - "help me adapt this video"
-    - "show me why this works"
-    - "what makes this convert"
-    - "show me the script and help me rewrite it"
 ---
 
 # analyze-video
@@ -51,7 +38,7 @@ metadata:
 ## Constraints
 
 - Platform: **TikTok only**.
-- Analyze source: **CreatOK `/api/open/skills/analyze`**. The remote service is responsible for transcript and vision extraction.
+- Analyze source: Extract transcript and visual notes from the TikTok URL.
 - The model's final user-facing response should match the user's input language, default **English**.
 - Avoid technical wording in the user-facing reply unless the user explicitly needs details for debugging or to share with a developer.
 - Follow shared guidance in `./references/common-rules.md`.
@@ -164,9 +151,9 @@ The model should not ask for a long form, a detailed brief, or a large batch of 
 - Use user-provided `run_id`
 - Create `analyze-video/.artifacts/<run_id>/{input,transcript,vision,outputs,logs}`
 
-2. **Call remote analyze**
+2. **Run analyze**
 
-- Call CreatOK: `POST /api/open/skills/analyze`
+- Run the CreatOK analyze step
 - Persist:
   - `input/video_details.json`
   - `transcript/transcript.json` (segments)
