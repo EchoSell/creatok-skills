@@ -106,14 +106,14 @@ The model should recommend a model before generation based on the use case:
   - `outputs/result.json` with `task_id/status/images/raw`
   - `outputs/result.md`
 - Persist the `task_id` immediately after submission so the user can recover later.
-- Return the final image URLs.
+- Return the final image URLs verbatim.
 
 ## Existing Task Recovery
 
 - If the user already has a `task_id`, continue from that task instead of starting a new one.
 - In recovery mode, do not ask the user to restate the prompt if the task id is already available.
 - The model can either check status once or keep polling if the user wants to wait.
-- If the task succeeded, return the final image URLs.
+- If the task succeeded, return the final image URLs verbatim.
 - If the task is still queued or running, explain clearly and offer to keep checking.
 - If the task failed, explain the failure and suggest next steps.
 

@@ -126,7 +126,7 @@ If a chosen plan conflicts with model limits, the model should explain the limit
   - `outputs/result.json` with `task_id/status/video_url/raw`
   - `outputs/result.md`
 - Persist the `task_id` immediately after submission, before waiting for the final status, so the user can recover the task later if the local process is interrupted.
-- Return the final `video_url`.
+- Return the final `video_url` verbatim.
 - After the AI version is complete, the model may optionally ask whether the user also wants a live-action shoot version of the same idea.
 
 ## Existing Task Recovery
@@ -136,7 +136,7 @@ If a chosen plan conflicts with model limits, the model should explain the limit
 - The model can either:
   - check the current task status once
   - or continue waiting and polling if the user wants to keep checking
-- If the task succeeded, return the final `video_url`.
+- If the task succeeded, return the final `video_url` verbatim.
 - If the task is still queued or running, explain that clearly and offer to keep checking.
 - If the task failed, explain the failure message if available and suggest the next best step.
 

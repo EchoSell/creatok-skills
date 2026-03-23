@@ -102,7 +102,11 @@ The analysis emphasis should follow the inferred video type:
 
 ## Output Preferences
 
-- When the user asks for the original script, the default format should be a timestamped line-by-line script.
+- The default final response should include both:
+  - the original script
+  - a storyboard / scene breakdown table
+- Present the original script as a timestamped line-by-line script.
+- Present the storyboard as a table with at least time range, scene summary, visual action, and spoken content / on-screen text.
 - Prefer a clean readable structure such as one spoken line per row with its corresponding time range.
 - Keep the final response easy for creators and sellers to scan and reuse.
 
@@ -111,8 +115,6 @@ The analysis emphasis should follow the inferred video type:
 After presenting the analysis, the model should naturally guide the user into the next step.
 Prefer a light transition such as:
 
-- show the original script extracted from the reference
-- show the original storyboard / scene breakdown from the reference
 - break it down into reusable templates for storyboards and sales video structures
 - rewrite this into a version for the user's own product
 - turn the analyzed direction into an AI-generation-ready version
