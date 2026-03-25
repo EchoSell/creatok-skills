@@ -25,6 +25,10 @@ class FakeClient {
         download_url: 'https://example.com/video.mp4',
         cover_url: 'https://example.com/cover.jpg',
         duration_sec: 12.4,
+        view_count: 12345,
+        like_count: 678,
+        comment_count: 90,
+        share_count: 12,
         expires_in_sec: 7200,
       },
       transcript: {
@@ -81,6 +85,49 @@ test('analyze-video writes expected artifacts', async () => {
   assert.equal(payload.skill, 'creatok-analyze-video');
   assert.equal(payload.platform, 'tiktok');
   assert.ok(payload.transcript.segments_count >= 1);
+  assert.equal(payload.video.stats.duration_sec, 12.4);
+  assert.equal(payload.video.stats.views, 12345);
+  assert.equal(payload.video.stats.likes, 678);
+  assert.equal(payload.video.stats.comments, 90);
+  assert.equal(payload.video.stats.shares, 12);
+  cleanup([runDir]);
+});
+
+test('analyze-video preserves missing video stats as null', async () => {
+  const runDir = path.join(ANALYZE_SKILL_DIR, '.artifacts', 'smoke-analyze-null-stats');
+  cleanup([runDir]);
+
+  class MissingStatsClient extends FakeClient {
+    async analyze() {
+      return {
+        session: { id: 202, uid: 'sess_demo_202' },
+        video_uid: 'video_demo_456',
+        video: {
+          download_url: 'https://example.com/video.mp4',
+          cover_url: 'https://example.com/cover.jpg',
+          expires_in_sec: 7200,
+        },
+        transcript: { segments: [] },
+        vision: { scenes: [] },
+        response: { content: null, reasoning_content: null, suggestions: [] },
+      };
+    }
+  }
+
+  const result = await runAnalyzeVideo({
+    tiktokUrl: 'https://www.tiktok.com/@demo/video/789',
+    runId: 'smoke-analyze-null-stats',
+    skillDir: ANALYZE_SKILL_DIR,
+    client: new MissingStatsClient(),
+  });
+
+  const payload = JSON.parse(fs.readFileSync(path.join(result.artifactsDir, 'outputs', 'result.json'), 'utf8'));
+  assert.equal(payload.video.stats.duration_sec, null);
+  assert.equal(payload.video.stats.views, null);
+  assert.equal(payload.video.stats.likes, null);
+  assert.equal(payload.video.stats.comments, null);
+  assert.equal(payload.video.stats.shares, null);
+  assert.equal(payload.video.stats.saves, null);
   cleanup([runDir]);
 });
 

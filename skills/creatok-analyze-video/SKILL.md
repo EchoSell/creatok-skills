@@ -105,6 +105,14 @@ The analysis emphasis should follow the inferred video type:
 - The default final response should include both:
   - the original script
   - a storyboard / scene breakdown table
+- The final response should also include a short video-metrics section that evaluates the available data, such as:
+  - duration
+  - likes
+  - views / plays
+  - comments
+  - shares / saves if available
+  - a brief overall assessment of whether the public stats look healthy, weak, or unavailable
+- Keep the metrics analysis simple and grounded in the available platform stats and source artifacts. The model should infer this directly in the final reply using the available raw metrics and source artifacts; do not invent platform engagement numbers or add a separate scripted metrics pipeline.
 - Present the original script as a timestamped line-by-line script.
 - Present the storyboard as a table with at least time range, scene summary, visual action, and spoken content / on-screen text.
 - Prefer a clean readable structure such as one spoken line per row with its corresponding time range.
@@ -113,18 +121,21 @@ The analysis emphasis should follow the inferred video type:
 ## Next-Step Handoff
 
 After presenting the analysis, the model should naturally guide the user into the next step.
-Prefer a light transition such as:
+Use a numbered list for the follow-up choices, and explicitly tell the user to reply with only the number.
+The user should not need to copy the full option text.
+Prefer a concise prompt such as:
 
-- break it down into reusable templates for storyboards and sales video structures
-- rewrite this into a version for the user's own product
-- turn the analyzed direction into an AI-generation-ready version
+1. Rewrite this for your product
+2. Turn this into an AI-ready script
+3. Break down the conversion logic
+
+Then add a short instruction like:
+
+- "Reply with 1, 2, or 3."
+- "Just send the number, and I will continue."
 
 The model should keep this handoff flexible and concise rather than forcing a rigid workflow.
-The model should prefer prompts that naturally invite the user's next reply to match `creatok-recreate-video`, for example:
-
-- "I can rewrite this into a version for your product."
-- "I can make you a similar version with a different angle."
-- "I can keep the structure and rewrite the script for your offer."
+When phrasing the options, keep them short and action-oriented so they are easy to answer with a single digit.
 
 The next-step options should also reflect the inferred video type:
 
