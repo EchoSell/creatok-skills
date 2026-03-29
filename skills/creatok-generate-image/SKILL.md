@@ -36,6 +36,22 @@ metadata:
     - "check this image generation task"
     - "did my image finish"
     - "check this image task id"
+    - "画像を生成して"
+    - "画像を作って"
+    - "商品画像を作って"
+    - "このプロンプトで画像を作って"
+    - "이미지 생성해줘"
+    - "이미지 만들어줘"
+    - "상품 이미지 만들어줘"
+    - "이 프롬프트로 이미지를 만들어줘"
+    - "genera una imagen"
+    - "crea una imagen"
+    - "genera una imagen de producto"
+    - "convierte este prompt en una imagen"
+    - "gere uma imagem"
+    - "crie uma imagem"
+    - "gere uma imagem de produto"
+    - "transforme este prompt em uma imagem"
 ---
 
 # generate-image

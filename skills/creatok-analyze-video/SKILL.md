@@ -31,6 +31,22 @@ metadata:
     - "show me the original script"
     - "show me the original storyboard"
     - "analyze this selling video"
+    - "このTikTok動画を分析して"
+    - "このTikTokを分析して"
+    - "このTikTokを分解して"
+    - "元の台本を見せて"
+    - "이 틱톡 영상을 분석해줘"
+    - "이 틱톡을 분석해줘"
+    - "이 틱톡을 분해해줘"
+    - "원본 대본을 보여줘"
+    - "analiza este video de TikTok"
+    - "analiza este TikTok"
+    - "desglosa este TikTok"
+    - "muéstrame el guion original"
+    - "analise este vídeo do TikTok"
+    - "analise este TikTok"
+    - "quebre este TikTok"
+    - "me mostre o roteiro original"
 ---
 
 # analyze-video

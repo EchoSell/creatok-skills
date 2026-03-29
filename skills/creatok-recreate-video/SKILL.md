@@ -33,6 +33,22 @@ metadata:
     - "make a non 1:1 version"
     - "help me recreate this video"
     - "use this as a template for my product"
+    - "このTikTokを作り直して"
+    - "このTikTokを私の商品向けに書き直して"
+    - "この動画を私の商品向けにアレンジして"
+    - "この動画をテンプレとして使って"
+    - "이 틱톡을 다시 만들어줘"
+    - "이 틱톡을 내 상품용으로 다시 써줘"
+    - "이 영상을 내 상품에 맞게 바꿔줘"
+    - "이 영상을 내 상품 템플릿으로 써줘"
+    - "recrea este TikTok"
+    - "reescribe este TikTok para mi producto"
+    - "adapta este video a mi producto"
+    - "usa este video como plantilla para mi producto"
+    - "recrie este TikTok"
+    - "reescreva este TikTok para o meu produto"
+    - "adapte este vídeo ao meu produto"
+    - "use este vídeo como modelo para o meu produto"
 ---
 
 # recreate-video

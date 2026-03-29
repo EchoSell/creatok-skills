@@ -34,6 +34,22 @@ metadata:
     - "start this generation"
     - "check this video generation task"
     - "check this task id"
+    - "TikTok動画を作って"
+    - "TikTok広告を作って"
+    - "この台本を動画にして"
+    - "動画生成を開始して"
+    - "틱톡 영상 만들어줘"
+    - "틱톡 광고 만들어줘"
+    - "이 대본을 영상으로 만들어줘"
+    - "영상 생성을 시작해줘"
+    - "genera un video de TikTok"
+    - "crea un anuncio de TikTok"
+    - "convierte este guion en un video"
+    - "inicia la generación de video"
+    - "gere um vídeo para TikTok"
+    - "crie um anúncio para TikTok"
+    - "transforme este roteiro em vídeo"
+    - "inicie a geração de vídeo"
 ---
 
 # generate-video
