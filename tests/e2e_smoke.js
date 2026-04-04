@@ -48,7 +48,8 @@ class FakeClient {
     };
   }
 
-  async submitTask() {
+  async submitTask(payload) {
+    this.lastSubmitPayload = payload;
     return { task_id: 'task_demo_123' };
   }
 
@@ -166,7 +167,10 @@ test('generate-video returns final url and writes artifacts', async () => {
     prompt: 'A short TikTok-style demo video',
     runId: 'smoke-generate',
     skillDir: GENERATE_SKILL_DIR,
-    ratio: '9:16',
+    model: 'veo-3.1-fast-exp',
+    orientation: '9:16',
+    seconds: 8,
+    definition: '720p',
     client: new FakeClient(),
     pollInterval: 0.01,
     timeoutSec: 1,
@@ -177,6 +181,9 @@ test('generate-video returns final url and writes artifacts', async () => {
   assert.equal(fs.existsSync(path.join(result.artifactsDir, 'outputs', 'result.json')), true);
   const payload = JSON.parse(fs.readFileSync(path.join(result.artifactsDir, 'outputs', 'result.json'), 'utf8'));
   assert.equal(payload.task_id, 'task_demo_123');
+  assert.equal(payload.orientation, '9:16');
+  assert.equal(payload.seconds, 8);
+  assert.equal(payload.definition, '720p');
   cleanup([runDir]);
 });
 
@@ -196,7 +203,10 @@ test('generate-video persists task id even when polling fails', async () => {
         prompt: 'A short TikTok-style demo video',
         runId: 'smoke-generate-error',
         skillDir: GENERATE_SKILL_DIR,
-        ratio: '9:16',
+        model: 'veo-3.1-fast-exp',
+        orientation: '9:16',
+        seconds: 8,
+        definition: '720p',
         client: new FailingStatusClient(),
         pollInterval: 0.01,
         timeoutSec: 1,
@@ -207,8 +217,51 @@ test('generate-video persists task id even when polling fails', async () => {
   const payload = JSON.parse(fs.readFileSync(path.join(runDir, 'outputs', 'result.json'), 'utf8'));
   assert.equal(payload.task_id, 'task_demo_123');
   assert.equal(payload.status, 'submitted');
+  assert.equal(payload.seconds, 8);
+  assert.equal(payload.definition, '720p');
   assert.equal(payload.error.message, 'Temporary network error');
   cleanup([runDir]);
+});
+
+test('generate-video defaults seconds and definition by model', async () => {
+  const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-generate-defaults');
+  cleanup([runDir]);
+
+  const client = new FakeClient();
+  await runGenerateVideo({
+    prompt: 'A short TikTok-style demo video',
+    runId: 'smoke-generate-defaults',
+    skillDir: GENERATE_SKILL_DIR,
+    model: 'sora-2',
+    orientation: '9:16',
+    client,
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.deepEqual(client.lastSubmitPayload, {
+    prompt: 'A short TikTok-style demo video',
+    orientation: '9:16',
+    seconds: 12,
+    definition: '720p',
+    model: 'sora-2',
+  });
+  cleanup([runDir]);
+});
+
+test('generate-video validates unsupported definition', async () => {
+  await assert.rejects(
+    () =>
+      runGenerateVideo({
+        prompt: 'test',
+        runId: 'smoke-generate-invalid-definition',
+        skillDir: GENERATE_SKILL_DIR,
+        model: 'veo-3.1-fast-exp',
+        definition: '1080p',
+        client: new FakeClient(),
+      }),
+    /does not support definition 1080p/,
+  );
 });
 
 test('generate-video can query existing task id', async () => {

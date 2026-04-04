@@ -8,7 +8,7 @@ const SKILL_ROOT = path.resolve(__dirname, '..');
 
 function parseArgs(argv) {
   const args = {
-    ratio: '9:16',
+    orientation: '9:16',
     model: 'veo-3.1-fast-exp',
     timeoutSec: 600,
     pollInterval: 3,
@@ -29,7 +29,9 @@ function parseArgs(argv) {
     const value = argv[i + 1];
     if (key === '--prompt') args.prompt = value;
     if (key === '--task_id') args.taskId = value;
-    if (key === '--ratio') args.ratio = value;
+    if (key === '--orientation') args.orientation = value;
+    if (key === '--seconds') args.seconds = Number(value);
+    if (key === '--definition') args.definition = value;
     if (key === '--model') args.model = value;
     if (key === '--run_id') args.runId = value;
     if (key === '--timeout_sec') args.timeoutSec = Number(value);
@@ -44,7 +46,9 @@ function parseArgs(argv) {
 async function confirmGeneration(args) {
   console.log('About to generate video via CreatOK Open Skills proxy.');
   console.log(`- model: ${args.model}`);
-  console.log(`- ratio: ${args.ratio}`);
+  console.log(`- orientation: ${args.orientation}`);
+  if (args.seconds != null) console.log(`- seconds: ${args.seconds}`);
+  if (args.definition) console.log(`- definition: ${args.definition}`);
   console.log(`- prompt (first 120 chars): ${String(args.prompt).slice(0, 120)}`);
   const rl = readline.createInterface({ input: stdin, output: stdout });
   try {
@@ -58,7 +62,7 @@ async function confirmGeneration(args) {
 async function main() {
   const args = parseArgs(process.argv);
   if (!args.runId || (!args.prompt && !args.taskId)) {
-    console.error('Usage: run.js --run_id <run_id> (--prompt <prompt> [--ratio 9:16] [--model veo-3.1-fast-exp] [--yes] | --task_id <task_id> [--wait] [--model veo-3.1-fast-exp])');
+    console.error('Usage: run.js --run_id <run_id> (--prompt <prompt> [--orientation 9:16] [--seconds 8] [--definition 720p] [--model veo-3.1-fast-exp] [--yes] | --task_id <task_id> [--wait] [--model veo-3.1-fast-exp])');
     process.exit(2);
   }
 
@@ -89,7 +93,9 @@ async function main() {
     prompt: args.prompt,
     runId: args.runId,
     skillDir: SKILL_ROOT,
-    ratio: args.ratio,
+    orientation: args.orientation,
+    seconds: args.seconds,
+    definition: args.definition || null,
     model: args.model,
     timeoutSec: args.timeoutSec,
     pollInterval: args.pollInterval,

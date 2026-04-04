@@ -50,9 +50,11 @@ class CreatokOpenSkillsClient {
     return payload.data || {};
   }
 
-  async submitTask(prompt, ratio, model) {
+  async submitTask({ prompt, orientation, seconds, definition, model }) {
+    const body = { prompt, orientation, seconds, definition, model };
+
     const payload = await this.requestJson('POST', `${this.cfg.baseUrl}/api/open/skills/tasks`, {
-      body: { prompt, ratio, model },
+      body,
       timeoutSec: 60,
     });
     if (payload.code !== 0) {
