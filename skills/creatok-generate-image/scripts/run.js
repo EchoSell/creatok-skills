@@ -8,7 +8,7 @@ const SKILL_ROOT = path.resolve(__dirname, '..');
 
 function parseArgs(argv) {
   const args = {
-    model: 'seedream-4.5',
+    model: 'nano-banana-2',
     resolution: '2K',
     n: 1,
     timeoutSec: 300,
@@ -66,7 +66,7 @@ async function main() {
   const args = parseArgs(process.argv);
   if (!args.runId || (!args.prompt && !args.taskId)) {
     console.error(
-      'Usage: run.js --run_id <run_id> (--prompt <prompt> [--model seedream-4.5] [--resolution 2K] [--n 1] [--aspect_ratio W:H] [--reference_images url1,url2] [--yes] | --task_id <task_id> [--wait])',
+      'Usage: run.js --run_id <run_id> (--prompt <prompt> [--model nano-banana-2] [--resolution 2K] [--n 1] [--aspect_ratio W:H] [--reference_images url1,url2] [--yes] | --task_id <task_id> [--wait])',
     );
     process.exit(2);
   }

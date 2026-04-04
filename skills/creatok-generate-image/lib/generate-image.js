@@ -8,7 +8,6 @@ const DEFAULT_N = 1;
 
 // Seedream models only support 2K/4K
 const MODEL_RESOLUTIONS = {
-  'seedream-4.5': ['2K', '4K'],
   'seedream-5.0-lite': ['2K', '4K'],
   'nano-banana-pro': ['1K', '2K', '4K'],
   'nano-banana-2': ['1K', '2K', '4K'],
