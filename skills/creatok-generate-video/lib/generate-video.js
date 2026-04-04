@@ -3,7 +3,6 @@ const { defaultClient } = require('./creatok-client');
 
 const MODEL_LIMITS = {
   'sora-2': { durations: [12], resolutions: ['720p'], ratios: ['9:16', '16:9'] },
-  'sora-2-exp': { durations: [15], resolutions: ['720p'], ratios: ['9:16', '16:9'] },
   'veo-3.1-fast-exp': { maxDuration: 8, resolutions: ['720p'] },
   'veo-3.1-exp': { maxDuration: 8, resolutions: ['720p'] },
 };

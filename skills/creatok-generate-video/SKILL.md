@@ -72,12 +72,6 @@ metadata:
   - supported duration: **12s**
   - supported aspect ratios: **9:16**, **16:9**
 
-- `Sora 2 Exp`
-  - actual model id: `sora-2-exp`
-  - supported resolutions: **720p**
-  - supported duration: **15s**
-  - supported aspect ratios: **9:16**, **16:9**
-
 - `Veo 3.1 Fast`
   - actual model id: `veo-3.1-fast-exp`
   - fastest and lowest-cost option
@@ -96,7 +90,6 @@ The model should recommend a model before generation instead of blindly using a 
 The recommendation should follow these principles:
 
 - prefer `Sora 2` (`sora-2`) for 12-second generation
-- prefer `Sora 2 Exp` (`sora-2-exp`) for 15-second generation
 - prefer `Veo 3.1 Fast` (`veo-3.1-fast-exp`) for previews, quick testing, and lightweight product demo clips
 - prefer `Veo 3.1 Quality` (`veo-3.1-exp`) for formal product demos and higher-quality final clips
 
@@ -115,7 +108,7 @@ Reference images are currently not supported in this skill.
 - ask only for what is still necessary to generate a good video
 - prefer the direction, script, and selling points already established earlier in the conversation
 - if details are missing, ask one or two short follow-up questions instead of requesting a full brief again
-- prefer details that help AI generation directly, such as scene intent, visual style, pacing, product emphasis, and whether the user wants `Sora 2`, `Sora 2 Exp`, or a Veo model
+- prefer details that help AI generation directly, such as scene intent, visual style, pacing, product emphasis, and whether the user wants `Sora 2` or a Veo model
 
 ## Workflow
 

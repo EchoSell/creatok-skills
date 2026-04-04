@@ -264,6 +264,20 @@ test('generate-video validates unsupported definition', async () => {
   );
 });
 
+test('generate-video rejects sora-2-exp', async () => {
+  await assert.rejects(
+    () =>
+      runGenerateVideo({
+        prompt: 'test',
+        runId: 'smoke-generate-unsupported-model',
+        skillDir: GENERATE_SKILL_DIR,
+        model: 'sora-2-exp',
+        client: new FakeClient(),
+      }),
+    /Unsupported model: sora-2-exp/,
+  );
+});
+
 test('generate-video can query existing task id', async () => {
   const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-status');
   cleanup([runDir]);
