@@ -258,6 +258,58 @@ test('generate-video defaults seconds and definition by model', async () => {
   cleanup([runDir]);
 });
 
+test('generate-video defaults seconds and definition for doubao-seedance-2', async () => {
+  const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-generate-seedance-defaults');
+  cleanup([runDir]);
+
+  const client = new FakeClient();
+  await runGenerateVideo({
+    prompt: 'A longer product explainer clip',
+    runId: 'smoke-generate-seedance-defaults',
+    skillDir: GENERATE_SKILL_DIR,
+    model: 'doubao-seedance-2',
+    orientation: '9:16',
+    client,
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.deepEqual(client.lastSubmitPayload, {
+    prompt: 'A longer product explainer clip',
+    orientation: '9:16',
+    seconds: 15,
+    definition: '480p',
+    model: 'doubao-seedance-2',
+  });
+  cleanup([runDir]);
+});
+
+test('generate-video defaults seconds and definition for doubao-seedance-2-fast', async () => {
+  const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-generate-seedance-fast-defaults');
+  cleanup([runDir]);
+
+  const client = new FakeClient();
+  await runGenerateVideo({
+    prompt: 'A faster product variation test clip',
+    runId: 'smoke-generate-seedance-fast-defaults',
+    skillDir: GENERATE_SKILL_DIR,
+    model: 'doubao-seedance-2-fast',
+    orientation: '9:16',
+    client,
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.deepEqual(client.lastSubmitPayload, {
+    prompt: 'A faster product variation test clip',
+    orientation: '9:16',
+    seconds: 15,
+    definition: '480p',
+    model: 'doubao-seedance-2-fast',
+  });
+  cleanup([runDir]);
+});
+
 test('generate-video validates unsupported definition', async () => {
   await assert.rejects(
     () =>
@@ -270,6 +322,36 @@ test('generate-video validates unsupported definition', async () => {
         client: new FakeClient(),
       }),
     /does not support definition 1080p/,
+  );
+});
+
+test('generate-video validates minimum duration for seedance-2', async () => {
+  await assert.rejects(
+    () =>
+      runGenerateVideo({
+        prompt: 'test',
+        runId: 'smoke-generate-seedance-too-short',
+        skillDir: GENERATE_SKILL_DIR,
+        model: 'doubao-seedance-2',
+        seconds: 3,
+        client: new FakeClient(),
+      }),
+    /requires duration between 4s and 15s/,
+  );
+});
+
+test('generate-video validates seedance-2 aspect ratio', async () => {
+  await assert.rejects(
+    () =>
+      runGenerateVideo({
+        prompt: 'test',
+        runId: 'smoke-generate-seedance-invalid-ratio',
+        skillDir: GENERATE_SKILL_DIR,
+        model: 'doubao-seedance-2',
+        orientation: '21:9',
+        client: new FakeClient(),
+      }),
+    /does not support orientation 21:9/,
   );
 });
 
@@ -316,6 +398,31 @@ test('generate-video uploads local reference images before submit', async () => 
   cleanup([runDir, imageA, imageB]);
 });
 
+test('generate-video allows up to 5 reference images for seedance-2', async () => {
+  const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-generate-seedance-reference-images');
+  const imagePaths = Array.from({ length: 5 }, (_, index) =>
+    path.join(GENERATE_SKILL_DIR, '.artifacts', `seedance-ref-${index + 1}.png`),
+  );
+  cleanup([runDir, ...imagePaths]);
+  imagePaths.forEach((imagePath) => fs.writeFileSync(imagePath, 'fake'));
+
+  const client = new FakeClient();
+  await runGenerateVideo({
+    prompt: 'A multi-reference product video',
+    runId: 'smoke-generate-seedance-reference-images',
+    skillDir: GENERATE_SKILL_DIR,
+    model: 'doubao-seedance-2',
+    orientation: '9:16',
+    referenceImages: imagePaths,
+    client,
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.equal(client.lastSubmitPayload.referenceImageKeys.length, 5);
+  cleanup([runDir, ...imagePaths]);
+});
+
 test('generate-video validates reference image count by model', async () => {
   const imageA = path.join(GENERATE_SKILL_DIR, '.artifacts', 'too-many-ref-a.png');
   const imageB = path.join(GENERATE_SKILL_DIR, '.artifacts', 'too-many-ref-b.jpg');
@@ -338,6 +445,30 @@ test('generate-video validates reference image count by model', async () => {
   );
 
   cleanup([imageA, imageB]);
+});
+
+test('generate-video rejects more than 5 reference images for seedance-2', async () => {
+  const imagePaths = Array.from({ length: 6 }, (_, index) =>
+    path.join(GENERATE_SKILL_DIR, '.artifacts', `seedance-too-many-${index + 1}.png`),
+  );
+  cleanup(imagePaths);
+  imagePaths.forEach((imagePath) => fs.writeFileSync(imagePath, 'fake'));
+
+  await assert.rejects(
+    () =>
+      runGenerateVideo({
+        prompt: 'test',
+        runId: 'smoke-generate-seedance-too-many-reference-images',
+        skillDir: GENERATE_SKILL_DIR,
+        model: 'doubao-seedance-2',
+        orientation: '9:16',
+        referenceImages: imagePaths,
+        client: new FakeClient(),
+      }),
+    /supports at most 5 reference images/,
+  );
+
+  cleanup(imagePaths);
 });
 
 test('generate-video can query existing task id', async () => {

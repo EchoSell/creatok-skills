@@ -2,6 +2,20 @@ const { artifactsForRun } = require('./artifacts');
 const { defaultClient } = require('./creatok-client');
 
 const MODEL_LIMITS = {
+  'doubao-seedance-2': {
+    minDuration: 4,
+    maxDuration: 15,
+    resolutions: ['480p', '720p'],
+    ratios: ['16:9', '9:16', '1:1', '4:3', '3:4'],
+    maxReferenceImages: 5,
+  },
+  'doubao-seedance-2-fast': {
+    minDuration: 4,
+    maxDuration: 15,
+    resolutions: ['480p', '720p'],
+    ratios: ['16:9', '9:16', '1:1', '4:3', '3:4'],
+    maxReferenceImages: 5,
+  },
   'sora-2': { durations: [12], resolutions: ['720p'], ratios: ['9:16', '16:9'], maxReferenceImages: 1 },
   'veo-3.1-fast-exp': { maxDuration: 8, resolutions: ['720p'], maxReferenceImages: 3 },
   'veo-3.1-exp': { maxDuration: 8, resolutions: ['720p'], maxReferenceImages: 3 },
@@ -12,7 +26,9 @@ function defaultDurationForModel(model) {
   if (!limits) {
     throw new Error(`Unsupported model: ${model}`);
   }
-  return limits.durations ? limits.durations[0] : limits.maxDuration;
+  if (limits.durations) return limits.durations[0];
+  if (limits.defaultDuration) return limits.defaultDuration;
+  return limits.maxDuration;
 }
 
 function defaultResolutionForModel(model) {
@@ -33,6 +49,9 @@ function validateParams({ model, orientation, seconds, definition, referenceImag
   }
   if (limits.durations && !limits.durations.includes(seconds)) {
     throw new Error(`Model ${model} requires duration ${limits.durations.join(' or ')}s.`);
+  }
+  if (limits.minDuration && seconds < limits.minDuration) {
+    throw new Error(`Model ${model} requires duration between ${limits.minDuration}s and ${limits.maxDuration}s.`);
   }
   if (limits.maxDuration && seconds > limits.maxDuration) {
     throw new Error(`Model ${model} supports max duration ${limits.maxDuration}s.`);

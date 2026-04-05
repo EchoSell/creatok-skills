@@ -66,6 +66,20 @@ metadata:
 
 ## Model Selection Rules
 
+- `Seedance 2`
+  - actual model id: `doubao-seedance-2`
+  - best for longer clips, multi-image guidance, and product videos that need stronger visual control
+  - supported resolutions in the current Open Skills endpoint: **480p**, **720p**
+  - supported duration in the current Open Skills endpoint: **4-15s**
+  - supported aspect ratios in the current Open Skills endpoint: **9:16**, **16:9**, **1:1**, **4:3**, **3:4**
+
+- `Seedance 2 Fast`
+  - actual model id: `doubao-seedance-2-fast`
+  - faster variant for the same Seedance-style workflow when iteration speed matters more than the final pass
+  - supported resolutions in the current Open Skills endpoint: **480p**, **720p**
+  - supported duration in the current Open Skills endpoint: **4-15s**
+  - supported aspect ratios in the current Open Skills endpoint: **9:16**, **16:9**, **1:1**, **4:3**, **3:4**
+
 - `Sora 2`
   - actual model id: `sora-2`
   - supported resolutions: **720p**
@@ -89,14 +103,18 @@ metadata:
 The model should recommend a model before generation instead of blindly using a default.
 The recommendation should follow these principles:
 
+- prefer `Seedance 2` (`doubao-seedance-2`) for longer clips, more flexible aspect ratios, and image-guided product videos
+- prefer `Seedance 2 Fast` (`doubao-seedance-2-fast`) for faster iteration when the user wants the Seedance path but cares more about speed than the final pass
 - prefer `Sora 2` (`sora-2`) for 12-second generation
 - prefer `Veo 3.1 Fast` (`veo-3.1-fast-exp`) for previews, quick testing, and lightweight product demo clips
 - prefer `Veo 3.1 Quality` (`veo-3.1-exp`) for formal product demos and higher-quality final clips
 
 If a chosen plan conflicts with model limits, the model should explain the limitation, suggest a workable plan, and wait for user confirmation before generating.
 
-Current implementation defaults to the lower supported `definition` for each model, which is `720p` for all listed models.
+Current implementation defaults to the lower supported `definition` for each model, which is `480p` for `Seedance 2` and `720p` for the other listed models.
 Reference images are supported by uploading local image files first, then passing the uploaded reference to the video task.
+- `Seedance 2` supports at most 5 reference images in the current Open Skills endpoint
+- `Seedance 2 Fast` supports at most 5 reference images in the current Open Skills endpoint
 - `Sora 2` supports at most 1 reference image
 - `Veo 3.1 Fast` supports at most 3 reference images
 - `Veo 3.1 Quality` supports at most 3 reference images
@@ -112,6 +130,7 @@ Reference images are supported by uploading local image files first, then passin
 - prefer the direction, script, and selling points already established earlier in the conversation
 - if details are missing, ask one or two short follow-up questions instead of requesting a full brief again
 - prefer details that help AI generation directly, such as scene intent, visual style, pacing, product emphasis, and whether the user wants `Sora 2` or a Veo model
+- when naming a model in tool calls or handoff instructions, use the exact official model id instead of aliases
 
 ## Workflow
 

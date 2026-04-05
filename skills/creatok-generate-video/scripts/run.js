@@ -65,7 +65,7 @@ async function confirmGeneration(args) {
 async function main() {
   const args = parseArgs(process.argv);
   if (!args.runId || (!args.prompt && !args.taskId)) {
-    console.error('Usage: run.js --run_id <run_id> (--prompt <prompt> [--orientation 9:16] [--seconds 8] [--definition 720p] [--reference_images /abs/a.png,/abs/b.jpg] [--model veo-3.1-fast-exp] [--yes] | --task_id <task_id> [--wait] [--model veo-3.1-fast-exp])');
+    console.error('Usage: run.js --run_id <run_id> (--prompt <prompt> [--orientation 9:16] [--seconds 8] [--definition 720p] [--reference_images /abs/a.png,/abs/b.jpg] [--model veo-3.1-fast-exp|doubao-seedance-2|doubao-seedance-2-fast] [--yes] | --task_id <task_id> [--wait] [--model veo-3.1-fast-exp|doubao-seedance-2|doubao-seedance-2-fast])');
     process.exit(2);
   }
 
