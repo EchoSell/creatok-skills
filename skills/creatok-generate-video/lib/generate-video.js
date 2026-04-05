@@ -2,9 +2,9 @@ const { artifactsForRun } = require('./artifacts');
 const { defaultClient } = require('./creatok-client');
 
 const MODEL_LIMITS = {
-  'sora-2': { durations: [12], resolutions: ['720p'], ratios: ['9:16', '16:9'] },
-  'veo-3.1-fast-exp': { maxDuration: 8, resolutions: ['720p'] },
-  'veo-3.1-exp': { maxDuration: 8, resolutions: ['720p'] },
+  'sora-2': { durations: [12], resolutions: ['720p'], ratios: ['9:16', '16:9'], maxReferenceImages: 1 },
+  'veo-3.1-fast-exp': { maxDuration: 8, resolutions: ['720p'], maxReferenceImages: 3 },
+  'veo-3.1-exp': { maxDuration: 8, resolutions: ['720p'], maxReferenceImages: 3 },
 };
 
 function defaultDurationForModel(model) {
@@ -23,7 +23,7 @@ function defaultResolutionForModel(model) {
   return limits.resolutions[0];
 }
 
-function validateParams({ model, orientation, seconds, definition }) {
+function validateParams({ model, orientation, seconds, definition, referenceImages = [] }) {
   const limits = MODEL_LIMITS[model];
   if (!limits) {
     throw new Error(`Unsupported model: ${model}. Supported: ${Object.keys(MODEL_LIMITS).join(', ')}`);
@@ -40,6 +40,24 @@ function validateParams({ model, orientation, seconds, definition }) {
   if (limits.ratios && !limits.ratios.includes(orientation)) {
     throw new Error(`Model ${model} does not support orientation ${orientation}. Allowed: ${limits.ratios.join(', ')}`);
   }
+  if (referenceImages.length > limits.maxReferenceImages) {
+    throw new Error(
+      `Model ${model} supports at most ${limits.maxReferenceImages} reference image${limits.maxReferenceImages > 1 ? 's' : ''}.`,
+    );
+  }
+}
+
+async function uploadReferenceImages(client, referenceImages, timeoutSec) {
+  if (!referenceImages || referenceImages.length === 0) return [];
+  const uploadedKeys = [];
+  for (const filePath of referenceImages) {
+    const key = await client.uploadImageFile(filePath, {
+      prefix: 'open-skills/reference-images',
+      timeoutSec,
+    });
+    uploadedKeys.push(key);
+  }
+  return uploadedKeys;
 }
 
 function buildGenerateResult({
@@ -168,6 +186,7 @@ async function runGenerateVideo({
   model = 'veo-3.1-fast-exp',
   seconds = null,
   definition = null,
+  referenceImages = [],
   pollInterval = 3,
   timeoutSec = 600,
   client = defaultClient(),
@@ -179,7 +198,9 @@ async function runGenerateVideo({
     orientation,
     seconds: finalSeconds,
     definition: finalDefinition,
+    referenceImages,
   });
+  const referenceImageKeys = await uploadReferenceImages(client, referenceImages, timeoutSec);
 
   const artifacts = artifactsForRun(skillDir, runId);
   artifacts.ensure();
@@ -190,6 +211,7 @@ async function runGenerateVideo({
     seconds: finalSeconds,
     definition: finalDefinition,
     model,
+    ...(referenceImageKeys.length > 0 ? { referenceImageKeys } : {}),
   });
   const taskId = submit.task_id;
   if (!taskId) {

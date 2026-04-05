@@ -13,6 +13,7 @@ function parseArgs(argv) {
     timeoutSec: 600,
     pollInterval: 3,
     yes: false,
+    referenceImages: [],
   };
 
   for (let i = 2; i < argv.length; i += 1) {
@@ -32,6 +33,7 @@ function parseArgs(argv) {
     if (key === '--orientation') args.orientation = value;
     if (key === '--seconds') args.seconds = Number(value);
     if (key === '--definition') args.definition = value;
+    if (key === '--reference_images') args.referenceImages = value.split(',').map((s) => s.trim());
     if (key === '--model') args.model = value;
     if (key === '--run_id') args.runId = value;
     if (key === '--timeout_sec') args.timeoutSec = Number(value);
@@ -49,6 +51,7 @@ async function confirmGeneration(args) {
   console.log(`- orientation: ${args.orientation}`);
   if (args.seconds != null) console.log(`- seconds: ${args.seconds}`);
   if (args.definition) console.log(`- definition: ${args.definition}`);
+  if (args.referenceImages.length > 0) console.log(`- reference_images: ${args.referenceImages.join(', ')}`);
   console.log(`- prompt (first 120 chars): ${String(args.prompt).slice(0, 120)}`);
   const rl = readline.createInterface({ input: stdin, output: stdout });
   try {
@@ -62,7 +65,7 @@ async function confirmGeneration(args) {
 async function main() {
   const args = parseArgs(process.argv);
   if (!args.runId || (!args.prompt && !args.taskId)) {
-    console.error('Usage: run.js --run_id <run_id> (--prompt <prompt> [--orientation 9:16] [--seconds 8] [--definition 720p] [--model veo-3.1-fast-exp] [--yes] | --task_id <task_id> [--wait] [--model veo-3.1-fast-exp])');
+    console.error('Usage: run.js --run_id <run_id> (--prompt <prompt> [--orientation 9:16] [--seconds 8] [--definition 720p] [--reference_images /abs/a.png,/abs/b.jpg] [--model veo-3.1-fast-exp] [--yes] | --task_id <task_id> [--wait] [--model veo-3.1-fast-exp])');
     process.exit(2);
   }
 
@@ -96,6 +99,7 @@ async function main() {
     orientation: args.orientation,
     seconds: args.seconds,
     definition: args.definition || null,
+    referenceImages: args.referenceImages,
     model: args.model,
     timeoutSec: args.timeoutSec,
     pollInterval: args.pollInterval,

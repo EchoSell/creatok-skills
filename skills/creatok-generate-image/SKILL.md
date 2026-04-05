@@ -2,7 +2,7 @@
 name: creatok-generate-image
 version: "1.0.0"
 description: "This skill should be used when the user asks to generate an image, create an AI image, produce a product image, generate a visual from a prompt, or check and continue an existing image generation task. Generates images through CreatOK's image generation API and can also recover interrupted generation flows from an existing task id."
-license: Internal
+license: Open Source
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local image rendering packages required."
 metadata:
   openclaw:
@@ -94,6 +94,7 @@ The model should recommend a model before generation based on the use case:
 - if resolution or aspect ratio is not specified, use sensible defaults (2K, square)
 - if the prompt is vague, offer to refine it before confirming generation
 - reference images are optional — ask only if the user implies style transfer or subject reference
+- when reference images are used, upload the local image file first and submit the returned uploaded reference with the generation task
 
 ## Workflow
 

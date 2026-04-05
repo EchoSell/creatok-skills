@@ -52,6 +52,7 @@ async function confirmGeneration(args) {
   console.log(`- resolution: ${args.resolution}`);
   console.log(`- n: ${args.n}`);
   if (args.aspectRatio) console.log(`- aspect_ratio: ${args.aspectRatio}`);
+  if (args.referenceImages.length > 0) console.log(`- reference_images: ${args.referenceImages.join(', ')}`);
   console.log(`- prompt (first 120 chars): ${String(args.prompt).slice(0, 120)}`);
   const rl = readline.createInterface({ input: stdin, output: stdout });
   try {
@@ -66,7 +67,7 @@ async function main() {
   const args = parseArgs(process.argv);
   if (!args.runId || (!args.prompt && !args.taskId)) {
     console.error(
-      'Usage: run.js --run_id <run_id> (--prompt <prompt> [--model nano-banana-2] [--resolution 2K] [--n 1] [--aspect_ratio W:H] [--reference_images url1,url2] [--yes] | --task_id <task_id> [--wait])',
+      'Usage: run.js --run_id <run_id> (--prompt <prompt> [--model nano-banana-2] [--resolution 2K] [--n 1] [--aspect_ratio W:H] [--reference_images /abs/a.png,/abs/b.jpg] [--yes] | --task_id <task_id> [--wait])',
     );
     process.exit(2);
   }

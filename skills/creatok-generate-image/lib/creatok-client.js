@@ -1,4 +1,42 @@
+const fs = require('node:fs/promises');
+const path = require('node:path');
 const { getCreatokConfig } = require('./config');
+
+function summarizeHttpError(status, url) {
+  const pathname = (() => {
+    try {
+      return new URL(url).pathname;
+    } catch {
+      return url;
+    }
+  })();
+  if (status === 401) {
+    return `Unauthorized calling ${pathname}. Check CREATOK_API_KEY.`;
+  }
+  if (status === 404) {
+    return `Endpoint not found at ${pathname}. Check the CreatOK base URL and deployment.`;
+  }
+  if (status >= 500) {
+    return `CreatOK server error calling ${pathname}. Try again later.`;
+  }
+  return `HTTP ${status} calling ${pathname}.`;
+}
+
+function contentTypeForFile(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  const map = {
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+  };
+  const type = map[ext];
+  if (!type) {
+    throw new Error(`Unsupported image file type for upload: ${filePath}`);
+  }
+  return type;
+}
 
 class CreatokOpenSkillsClient {
   constructor(cfg) {
@@ -26,11 +64,11 @@ class CreatokOpenSkillsClient {
       try {
         payload = JSON.parse(text);
       } catch (error) {
-        throw new Error(`Invalid JSON response: ${error}\nBody: ${text.slice(0, 500)}`);
+        throw new Error(`Invalid response from CreatOK endpoint ${url}.`);
       }
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status} calling ${url}. Body: ${text.slice(0, 500)}`);
+        throw new Error(summarizeHttpError(response.status, url));
       }
 
       return payload;
@@ -42,7 +80,7 @@ class CreatokOpenSkillsClient {
   async submitImageTask({ prompt, model, resolution, n, aspectRatio, referenceImages }) {
     const body = { prompt, model, resolution, n };
     if (aspectRatio) body.aspect_ratio = aspectRatio;
-    if (referenceImages && referenceImages.length > 0) body.reference_images = referenceImages;
+    if (referenceImages && referenceImages.length > 0) body.imageObjectKeys = referenceImages;
 
     const payload = await this.requestJson('POST', `${this.cfg.baseUrl}/api/open/skills/image-generation`, {
       body,
@@ -52,6 +90,43 @@ class CreatokOpenSkillsClient {
       throw new Error(`CreatOK image task submission failed: ${JSON.stringify(payload)}`);
     }
     return payload.data || {};
+  }
+
+  async createImageUpload({ fileName, fileType, fileSize, prefix, timeoutSec = 60 }) {
+    const payload = await this.requestJson('POST', `${this.cfg.baseUrl}/api/open/skills/upload/image/presigned`, {
+      body: { fileName, fileType, fileSize, prefix },
+      timeoutSec,
+    });
+    if (payload.code !== 0) {
+      throw new Error(`CreatOK image upload init failed: ${JSON.stringify(payload)}`);
+    }
+    return payload.data || {};
+  }
+
+  async uploadImageFile(filePath, { prefix = 'open-skills/reference-images', timeoutSec = 60 } = {}) {
+    const fileName = path.basename(filePath);
+    const fileType = contentTypeForFile(filePath);
+    const file = await fs.readFile(filePath);
+    const upload = await this.createImageUpload({
+      fileName,
+      fileType,
+      fileSize: file.byteLength,
+      prefix,
+      timeoutSec,
+    });
+    if (!upload.presignedUploadUrl || !upload.objectKey) {
+      throw new Error(`Invalid upload init response: ${JSON.stringify(upload)}`);
+    }
+
+    const response = await fetch(upload.presignedUploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': fileType },
+      body: file,
+    });
+    if (!response.ok) {
+      throw new Error(`Image upload failed with HTTP ${response.status}.`);
+    }
+    return upload.objectKey;
   }
 
   async getTaskStatus(taskId) {

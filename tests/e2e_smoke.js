@@ -17,6 +17,10 @@ const { runGenerateVideo, runGenerateVideoStatus } = require('../skills/creatok-
 const { runGenerateImage, runGenerateImageStatus } = require('../skills/creatok-generate-image/lib/generate-image');
 
 class FakeClient {
+  constructor() {
+    this.uploadedFiles = [];
+  }
+
   async analyze() {
     return {
       session: { id: 101, uid: 'sess_demo_101' },
@@ -51,6 +55,11 @@ class FakeClient {
   async submitTask(payload) {
     this.lastSubmitPayload = payload;
     return { task_id: 'task_demo_123' };
+  }
+
+  async uploadImageFile(filePath) {
+    this.uploadedFiles.push(filePath);
+    return `uploads/${path.basename(filePath)}`;
   }
 
   async getTaskStatus() {
@@ -278,6 +287,59 @@ test('generate-video rejects sora-2-exp', async () => {
   );
 });
 
+test('generate-video uploads local reference images before submit', async () => {
+  const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-generate-reference-images');
+  const imageA = path.join(GENERATE_SKILL_DIR, '.artifacts', 'ref-a.png');
+  const imageB = path.join(GENERATE_SKILL_DIR, '.artifacts', 'ref-b.jpg');
+  cleanup([runDir, imageA, imageB]);
+  fs.writeFileSync(imageA, 'fake');
+  fs.writeFileSync(imageB, 'fake');
+
+  const client = new FakeClient();
+  await runGenerateVideo({
+    prompt: 'A short TikTok-style demo video',
+    runId: 'smoke-generate-reference-images',
+    skillDir: GENERATE_SKILL_DIR,
+    model: 'veo-3.1-fast-exp',
+    orientation: '9:16',
+    referenceImages: [imageA, imageB],
+    client,
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.deepEqual(client.uploadedFiles, [imageA, imageB]);
+  assert.deepEqual(client.lastSubmitPayload.referenceImageKeys, [
+    'uploads/ref-a.png',
+    'uploads/ref-b.jpg',
+  ]);
+  cleanup([runDir, imageA, imageB]);
+});
+
+test('generate-video validates reference image count by model', async () => {
+  const imageA = path.join(GENERATE_SKILL_DIR, '.artifacts', 'too-many-ref-a.png');
+  const imageB = path.join(GENERATE_SKILL_DIR, '.artifacts', 'too-many-ref-b.jpg');
+  cleanup([imageA, imageB]);
+  fs.writeFileSync(imageA, 'fake');
+  fs.writeFileSync(imageB, 'fake');
+
+  await assert.rejects(
+    () =>
+      runGenerateVideo({
+        prompt: 'test',
+        runId: 'smoke-generate-too-many-reference-images',
+        skillDir: GENERATE_SKILL_DIR,
+        model: 'sora-2',
+        orientation: '9:16',
+        referenceImages: [imageA, imageB],
+        client: new FakeClient(),
+      }),
+    /supports at most 1 reference image/,
+  );
+
+  cleanup([imageA, imageB]);
+});
+
 test('generate-video can query existing task id', async () => {
   const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-status');
   cleanup([runDir]);
@@ -296,8 +358,18 @@ test('generate-video can query existing task id', async () => {
 });
 
 class FakeImageClient {
-  async submitImageTask() {
+  constructor() {
+    this.uploadedFiles = [];
+  }
+
+  async submitImageTask(payload) {
+    this.lastImageSubmitPayload = payload;
     return { task_id: 'img_task_demo_456' };
+  }
+
+  async uploadImageFile(filePath) {
+    this.uploadedFiles.push(filePath);
+    return `uploads/${path.basename(filePath)}`;
   }
 
   async getTaskStatus() {
@@ -343,6 +415,35 @@ test('generate-image returns images and writes artifacts', async () => {
 
   assert.equal(fs.existsSync(path.join(result.artifactsDir, 'outputs', 'result.md')), true);
   cleanup([runDir]);
+});
+
+test('generate-image uploads local reference images before submit', async () => {
+  const runDir = path.join(IMAGE_SKILL_DIR, '.artifacts', 'smoke-image-reference-images');
+  const imageA = path.join(IMAGE_SKILL_DIR, '.artifacts', 'img-ref-a.png');
+  const imageB = path.join(IMAGE_SKILL_DIR, '.artifacts', 'img-ref-b.jpg');
+  cleanup([runDir, imageA, imageB]);
+  fs.writeFileSync(imageA, 'fake');
+  fs.writeFileSync(imageB, 'fake');
+
+  const client = new FakeImageClient();
+  await runGenerateImage({
+    prompt: 'A product image',
+    runId: 'smoke-image-reference-images',
+    skillDir: IMAGE_SKILL_DIR,
+    model: 'nano-banana-2',
+    resolution: '2K',
+    referenceImages: [imageA, imageB],
+    client,
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.deepEqual(client.uploadedFiles, [imageA, imageB]);
+  assert.deepEqual(client.lastImageSubmitPayload.referenceImages, [
+    'uploads/img-ref-a.png',
+    'uploads/img-ref-b.jpg',
+  ]);
+  cleanup([runDir, imageA, imageB]);
 });
 
 test('generate-image persists task id even when polling fails', async () => {

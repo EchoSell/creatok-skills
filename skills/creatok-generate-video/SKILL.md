@@ -2,7 +2,7 @@
 name: creatok-generate-video
 version: "1.0.0"
 description: Use when generating, resuming, or checking TikTok videos, ads, or selling videos.
-license: Internal
+license: Open Source
 compatibility: "Claude Code ≥1.0, OpenClaw skills, ClawHub-compatible installers. Requires network access to CreatOK Open Skills API. No local video rendering packages required."
 metadata:
   openclaw:
@@ -96,7 +96,10 @@ The recommendation should follow these principles:
 If a chosen plan conflicts with model limits, the model should explain the limitation, suggest a workable plan, and wait for user confirmation before generating.
 
 Current implementation defaults to the lower supported `definition` for each model, which is `720p` for all listed models.
-Reference images are currently not supported in this skill.
+Reference images are supported by uploading local image files first, then passing the uploaded reference to the video task.
+- `Sora 2` supports at most 1 reference image
+- `Veo 3.1 Fast` supports at most 3 reference images
+- `Veo 3.1 Quality` supports at most 3 reference images
 
 ## Multi-Segment Rules
 
@@ -117,6 +120,7 @@ Reference images are currently not supported in this skill.
   - model
   - orientation
   - definition and seconds, if relevant to the chosen model
+  - whether reference images are used
   - whether the plan is single-shot or multi-segment
   - any important limitation such as duration cap, portrait requirement, or manual stitching afterward
   - estimated cost/credits if available
