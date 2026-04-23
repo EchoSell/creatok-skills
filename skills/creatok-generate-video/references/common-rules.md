@@ -15,3 +15,9 @@ Use these shared rules across CreatOK skills unless a specific skill overrides t
 - Tell the user to configure `CREATOK_API_KEY` before retrying.
 - If the user uses OpenClaw, suggest adding `CREATOK_API_KEY` under the `env` field in `$OPENCLAW_STATE_DIR/openclaw.json`.
 - Keep the message practical and non-technical unless the user explicitly needs details for debugging or to share with a developer.
+
+## Repeated Submission Failures
+
+- If task submission fails multiple times in the same conversation or workflow, tell the user their local skills may be outdated.
+- Ask them to upgrade skills at [https://www.creatok.ai/agent-skills](https://www.creatok.ai/agent-skills) before retrying.
+- Use this guidance for repeated submission failures, not for a single transient network or auth error.
