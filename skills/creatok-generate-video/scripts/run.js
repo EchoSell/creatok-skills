@@ -2,14 +2,12 @@
 const path = require('node:path');
 const readline = require('node:readline/promises');
 const { stdin, stdout } = require('node:process');
-const { runGenerateVideo, runGenerateVideoStatus } = require('../lib/generate-video');
+const { resolveGenerateVideoRequest, runGenerateVideo, runGenerateVideoStatus } = require('../lib/generate-video');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
 
 function parseArgs(argv) {
   const args = {
-    orientation: '9:16',
-    model: 'veo-3.1-fast-exp',
     timeoutSec: 600,
     pollInterval: 3,
     yes: false,
@@ -48,9 +46,12 @@ function parseArgs(argv) {
 async function confirmGeneration(args) {
   console.log('About to generate video via CreatOK Open Skills proxy.');
   console.log(`- model: ${args.model}`);
+  console.log(`- model_summary: ${args.selectedModelSummary}`);
+  console.log(`- model_selection_reason: ${args.selectionReason}`);
+  if (args.estimatedCredits != null) console.log(`- estimated_credits: ${args.estimatedCredits}`);
   console.log(`- orientation: ${args.orientation}`);
-  if (args.seconds != null) console.log(`- seconds: ${args.seconds}`);
-  if (args.definition) console.log(`- definition: ${args.definition}`);
+  console.log(`- seconds: ${args.seconds}`);
+  console.log(`- definition: ${args.definition}`);
   if (args.referenceImages.length > 0) console.log(`- reference_images: ${args.referenceImages.join(', ')}`);
   console.log(`- prompt (first 120 chars): ${String(args.prompt).slice(0, 120)}`);
   const rl = readline.createInterface({ input: stdin, output: stdout });
@@ -62,10 +63,32 @@ async function confirmGeneration(args) {
   }
 }
 
+async function resolveCommandArgs(args) {
+  const resolved = await resolveGenerateVideoRequest({
+    orientation: args.orientation || null,
+    model: args.model || null,
+    seconds: args.seconds == null ? null : args.seconds,
+    definition: args.definition || null,
+    referenceImages: args.referenceImages,
+    timeoutSec: args.timeoutSec,
+  });
+
+  return {
+    ...args,
+    model: resolved.model,
+    orientation: resolved.orientation,
+    seconds: resolved.seconds,
+    definition: resolved.definition,
+    estimatedCredits: resolved.estimatedCredits,
+    selectedModelSummary: resolved.selectedModelSummary,
+    selectionReason: resolved.selectionReason,
+  };
+}
+
 async function main() {
   const args = parseArgs(process.argv);
   if (!args.runId || (!args.prompt && !args.taskId)) {
-    console.error('Usage: run.js --run_id <run_id> (--prompt <prompt> [--orientation 9:16] [--seconds 8] [--definition 720p] [--reference_images /abs/a.png,/abs/b.jpg] [--model veo-3.1-fast-exp|doubao-seedance-2|doubao-seedance-2-fast] [--yes] | --task_id <task_id> [--wait] [--model veo-3.1-fast-exp|doubao-seedance-2|doubao-seedance-2-fast])');
+    console.error('Usage: run.js --run_id <run_id> (--prompt <prompt> [--orientation <ratio>] [--seconds <seconds>] [--definition <definition>] [--reference_images /abs/a.png,/abs/b.jpg] [--model <model_id>] [--yes] | --task_id <task_id> [--wait] [--model <model_id>])');
     process.exit(2);
   }
 
@@ -84,8 +107,10 @@ async function main() {
     process.exit(result.status === 'succeeded' ? 0 : 1);
   }
 
-  if (!args.yes) {
-    const confirmed = await confirmGeneration(args);
+  const resolvedArgs = await resolveCommandArgs(args);
+
+  if (!resolvedArgs.yes) {
+    const confirmed = await confirmGeneration(resolvedArgs);
     if (!confirmed) {
       console.log('Canceled.');
       process.exit(2);
@@ -93,16 +118,16 @@ async function main() {
   }
 
   const result = await runGenerateVideo({
-    prompt: args.prompt,
-    runId: args.runId,
+    prompt: resolvedArgs.prompt,
+    runId: resolvedArgs.runId,
     skillDir: SKILL_ROOT,
-    orientation: args.orientation,
-    seconds: args.seconds,
-    definition: args.definition || null,
-    referenceImages: args.referenceImages,
-    model: args.model,
-    timeoutSec: args.timeoutSec,
-    pollInterval: args.pollInterval,
+    orientation: resolvedArgs.orientation,
+    seconds: resolvedArgs.seconds,
+    definition: resolvedArgs.definition || null,
+    referenceImages: resolvedArgs.referenceImages,
+    model: resolvedArgs.model,
+    timeoutSec: resolvedArgs.timeoutSec,
+    pollInterval: resolvedArgs.pollInterval,
   });
 
   console.log(JSON.stringify({ ok: true, run_id: result.runId, video_url: result.videoUrl }));

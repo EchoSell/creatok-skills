@@ -19,6 +19,7 @@ metadata:
     - ai-image
     - text-to-image
     - product-image
+    - gpt-image
     - seedream
     - nano-banana
     - prompt-to-image
@@ -65,33 +66,18 @@ metadata:
 
 ## Model Selection Rules
 
-- `Seedream 5.0 Lite`
-  - actual model id: `seedream-5.0-lite`
-  - faster and lighter, good for quick iteration
-  - resolutions: **2K, 4K only**
+The skill must read model list, defaults, and hard limits from the CreatOK capabilities endpoint at runtime instead of hardcoding them locally.
 
-- `Nano Banana Pro`
-  - actual model id: `nano-banana-pro`
-  - highest quality, best for photorealistic portraits and product shots
-  - resolutions: **1K, 2K, 4K**
+Keep the local client thin:
 
-- `Nano Banana 2`
-  - actual model id: `nano-banana-2`
-  - latest Nano Banana, best overall quality
-  - resolutions: **1K, 2K, 4K**
-
-The model should recommend a model before generation based on the use case:
-
-- **portraits / photorealistic people** → `nano-banana-2`
-- **product shots / e-commerce** → `nano-banana-pro`
-- **general illustration / concept art** → `nano-banana-2`
-- **quick preview / iteration** → `seedream-5.0-lite`
-- **user explicitly wants 1K** → `nano-banana-pro` or `nano-banana-2` (Seedream does not support 1K)
+- use the returned default model unless the user explicitly chooses another supported model
+- validate only hard execution constraints such as resolution, aspect ratio, count, and reference-image cap
+- keep user-facing model explanation minimal and avoid depending on provider, family, or hint-style metadata
 
 ## Inputs to clarify (ask if missing)
 
 - ask only for what is necessary to generate a good image
-- if resolution or aspect ratio is not specified, use sensible defaults (2K, square)
+- if resolution or aspect ratio is not specified, use the model defaults returned by the capabilities endpoint
 - if the prompt is vague, offer to refine it before confirming generation
 - reference images are optional — ask only if the user implies style transfer or subject reference
 - when reference images are used, upload the local image file first and submit the returned uploaded reference with the generation task

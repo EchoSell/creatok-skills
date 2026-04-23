@@ -1,32 +1,69 @@
 const { artifactsForRun } = require('./artifacts');
 const { defaultClient } = require('./creatok-client');
+const { buildUnsupportedImageModelError, fetchImageCapabilities, summarizeModelSelection } = require('./capabilities');
+const { defaultCapabilitiesClient } = require('./creatok-capabilities-client');
 
-const SUPPORTED_MODELS = ['seedream-5.0-lite', 'nano-banana-pro', 'nano-banana-2'];
-const DEFAULT_MODEL = 'nano-banana-2';
-const DEFAULT_RESOLUTION = '2K';
-const DEFAULT_N = 1;
+function capabilitiesOptions(client, timeoutSec) {
+  return {
+    client: typeof client.getCapabilities === 'function' ? client : null,
+    defaultClient: defaultCapabilitiesClient,
+    timeoutSec,
+  };
+}
 
-// Seedream models only support 2K/4K
-const MODEL_RESOLUTIONS = {
-  'seedream-5.0-lite': ['2K', '4K'],
-  'nano-banana-pro': ['1K', '2K', '4K'],
-  'nano-banana-2': ['1K', '2K', '4K'],
-};
+function parseImageCount(n) {
+  const parsed = Number(n);
+  if (!Number.isFinite(parsed) || !Number.isInteger(parsed)) {
+    throw new Error('n must be a finite integer');
+  }
+  return parsed;
+}
 
-function validateParams({ model, resolution, n, referenceImages }) {
-  if (!SUPPORTED_MODELS.includes(model)) {
-    throw new Error(`Unsupported model: ${model}. Supported: ${SUPPORTED_MODELS.join(', ')}`);
+async function resolveGenerateImageRequest({
+  model = null,
+  resolution = null,
+  n = null,
+  referenceImages = [],
+  timeoutSec = 300,
+  client = defaultClient(),
+}) {
+  const imageCapabilities = await fetchImageCapabilities(capabilitiesOptions(client, timeoutSec));
+  const finalModel = model || imageCapabilities.defaultModel;
+  const modelCapability = imageCapabilities.models.find((item) => item.id === finalModel);
+
+  if (!modelCapability) {
+    throw buildUnsupportedImageModelError(imageCapabilities, finalModel);
   }
-  const allowed = MODEL_RESOLUTIONS[model];
-  if (!allowed.includes(resolution)) {
-    throw new Error(`Model ${model} does not support resolution ${resolution}. Allowed: ${allowed.join(', ')}`);
+
+  const finalResolution = resolution || modelCapability.defaults.resolution;
+  const finalN = n == null ? modelCapability.defaults.n : parseImageCount(n);
+
+  if (!modelCapability.limits.resolutions.includes(finalResolution)) {
+    throw new Error(
+      `Model ${finalModel} does not support resolution ${finalResolution}. Allowed: ${modelCapability.limits.resolutions.join(', ')}`,
+    );
   }
-  if (n < 1 || n > 4) {
-    throw new Error('n must be between 1 and 4');
+  if (finalN < modelCapability.limits.n.min || finalN > modelCapability.limits.n.max) {
+    throw new Error(`n must be between ${modelCapability.limits.n.min} and ${modelCapability.limits.n.max}`);
   }
-  if (referenceImages && referenceImages.length > 5) {
-    throw new Error('Maximum 5 reference images allowed');
+  if (referenceImages.length > modelCapability.limits.maxReferenceImages) {
+    throw new Error(`Maximum ${modelCapability.limits.maxReferenceImages} reference images allowed`);
   }
+
+  const estimatedCreditsPerImage =
+    modelCapability.pricing && Object.prototype.hasOwnProperty.call(modelCapability.pricing.byResolution, finalResolution)
+      ? modelCapability.pricing.byResolution[finalResolution]
+      : null;
+  const estimatedCredits = estimatedCreditsPerImage == null ? null : estimatedCreditsPerImage * finalN;
+
+  return {
+    estimatedCredits,
+    selectedModelSummary: summarizeModelSelection(modelCapability, { estimatedCredits }),
+    selectionReason: model ? 'Model explicitly provided by caller.' : 'Using backend default model.',
+    model: finalModel,
+    resolution: finalResolution,
+    n: finalN,
+  };
 }
 
 async function uploadReferenceImages(client, referenceImages, timeoutSec) {
@@ -172,16 +209,23 @@ async function runGenerateImage({
   prompt,
   runId,
   skillDir,
-  model = DEFAULT_MODEL,
-  resolution = DEFAULT_RESOLUTION,
-  n = DEFAULT_N,
+  model = null,
+  resolution = null,
+  n = null,
   aspectRatio = null,
   referenceImages = [],
   pollInterval = 3,
   timeoutSec = 300,
   client = defaultClient(),
 }) {
-  validateParams({ model, resolution, n, referenceImages });
+  const resolved = await resolveGenerateImageRequest({
+    model,
+    resolution,
+    n,
+    referenceImages,
+    timeoutSec,
+    client,
+  });
 
   const imageObjectKeys = await uploadReferenceImages(client, referenceImages, timeoutSec);
 
@@ -190,9 +234,9 @@ async function runGenerateImage({
 
   const submit = await client.submitImageTask({
     prompt,
-    model,
-    resolution,
-    n,
+    model: resolved.model,
+    resolution: resolved.resolution,
+    n: resolved.n,
     aspectRatio,
     ...(imageObjectKeys.length > 0 ? { referenceImages: imageObjectKeys } : {}),
   });
@@ -205,9 +249,9 @@ async function runGenerateImage({
     runId,
     taskId: String(taskId),
     status: String(submit.status || 'submitted'),
-    model,
-    resolution,
-    n,
+    model: resolved.model,
+    resolution: resolved.resolution,
+    n: resolved.n,
     raw: { submit },
   });
   persistImageArtifacts(artifacts, initial);
@@ -221,9 +265,9 @@ async function runGenerateImage({
       runId,
       taskId: String(taskId),
       status,
-      model,
-      resolution,
-      n,
+      model: resolved.model,
+      resolution: resolved.resolution,
+      n: resolved.n,
       images,
       raw: { submit, status: raw },
       error:
@@ -247,9 +291,9 @@ async function runGenerateImage({
       runId,
       taskId: String(taskId),
       status: String(submit.status || 'submitted'),
-      model,
-      resolution,
-      n,
+      model: resolved.model,
+      resolution: resolved.resolution,
+      n: resolved.n,
       raw: { submit },
       error: { message: error instanceof Error ? error.message : String(error) },
     });
@@ -262,6 +306,7 @@ module.exports = {
   buildImageResult,
   persistImageArtifacts,
   pollGenerate,
+  resolveGenerateImageRequest,
   runGenerateImage,
   runGenerateImageStatus,
 };

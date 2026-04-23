@@ -1,69 +1,96 @@
 const { artifactsForRun } = require('./artifacts');
 const { defaultClient } = require('./creatok-client');
+const { buildUnsupportedVideoModelError, fetchVideoCapabilities, summarizeModelSelection } = require('./capabilities');
+const { defaultCapabilitiesClient } = require('./creatok-capabilities-client');
 
-const MODEL_LIMITS = {
-  'doubao-seedance-2': {
-    minDuration: 4,
-    maxDuration: 15,
-    resolutions: ['480p', '720p'],
-    ratios: ['16:9', '9:16', '1:1', '4:3', '3:4'],
-    maxReferenceImages: 5,
-  },
-  'doubao-seedance-2-fast': {
-    minDuration: 4,
-    maxDuration: 15,
-    resolutions: ['480p', '720p'],
-    ratios: ['16:9', '9:16', '1:1', '4:3', '3:4'],
-    maxReferenceImages: 5,
-  },
-  'sora-2': { durations: [12], resolutions: ['720p'], ratios: ['9:16', '16:9'], maxReferenceImages: 1 },
-  'veo-3.1-fast-exp': { maxDuration: 8, resolutions: ['720p'], maxReferenceImages: 3 },
-  'veo-3.1-exp': { maxDuration: 8, resolutions: ['720p'], maxReferenceImages: 3 },
-};
-
-function defaultDurationForModel(model) {
-  const limits = MODEL_LIMITS[model];
-  if (!limits) {
-    throw new Error(`Unsupported model: ${model}`);
-  }
-  if (limits.durations) return limits.durations[0];
-  if (limits.defaultDuration) return limits.defaultDuration;
-  return limits.maxDuration;
+function capabilitiesOptions(client, timeoutSec) {
+  return {
+    client: typeof client.getCapabilities === 'function' ? client : null,
+    defaultClient: defaultCapabilitiesClient,
+    timeoutSec,
+  };
 }
 
-function defaultResolutionForModel(model) {
-  const limits = MODEL_LIMITS[model];
-  if (!limits) {
-    throw new Error(`Unsupported model: ${model}`);
+function parseDurationSeconds(seconds) {
+  const parsed = Number(seconds);
+  if (!Number.isFinite(parsed) || !Number.isInteger(parsed)) {
+    throw new Error('seconds must be a finite integer');
   }
-  return limits.resolutions[0];
+  return parsed;
 }
 
-function validateParams({ model, orientation, seconds, definition, referenceImages = [] }) {
-  const limits = MODEL_LIMITS[model];
-  if (!limits) {
-    throw new Error(`Unsupported model: ${model}. Supported: ${Object.keys(MODEL_LIMITS).join(', ')}`);
+function validateDurations(model, durations, seconds) {
+  if (durations.enum && !durations.enum.includes(seconds)) {
+    throw new Error(`Model ${model} requires duration ${durations.enum.join(' or ')}s.`);
   }
-  if (!limits.resolutions.includes(definition)) {
-    throw new Error(`Model ${model} does not support definition ${definition}. Allowed: ${limits.resolutions.join(', ')}`);
+  if (durations.min != null && durations.max != null && (seconds < durations.min || seconds > durations.max)) {
+    throw new Error(`Model ${model} requires duration between ${durations.min}s and ${durations.max}s.`);
   }
-  if (limits.durations && !limits.durations.includes(seconds)) {
-    throw new Error(`Model ${model} requires duration ${limits.durations.join(' or ')}s.`);
+  if (durations.min != null && durations.max == null && seconds < durations.min) {
+    throw new Error(`Model ${model} requires duration at least ${durations.min}s.`);
   }
-  if (limits.minDuration && seconds < limits.minDuration) {
-    throw new Error(`Model ${model} requires duration between ${limits.minDuration}s and ${limits.maxDuration}s.`);
+  if (durations.max != null && durations.min == null && seconds > durations.max) {
+    throw new Error(`Model ${model} supports max duration ${durations.max}s.`);
   }
-  if (limits.maxDuration && seconds > limits.maxDuration) {
-    throw new Error(`Model ${model} supports max duration ${limits.maxDuration}s.`);
+}
+
+async function resolveGenerateVideoRequest({
+  orientation = null,
+  model = null,
+  seconds = null,
+  definition = null,
+  referenceImages = [],
+  timeoutSec = 600,
+  client = defaultClient(),
+}) {
+  const videoCapabilities = await fetchVideoCapabilities(capabilitiesOptions(client, timeoutSec));
+  const finalModel = model || videoCapabilities.defaultModel;
+  const modelCapability = videoCapabilities.models.find((item) => item.id === finalModel);
+
+  if (!modelCapability) {
+    throw buildUnsupportedVideoModelError(videoCapabilities, finalModel);
   }
-  if (limits.ratios && !limits.ratios.includes(orientation)) {
-    throw new Error(`Model ${model} does not support orientation ${orientation}. Allowed: ${limits.ratios.join(', ')}`);
-  }
-  if (referenceImages.length > limits.maxReferenceImages) {
+
+  const finalOrientation = orientation || modelCapability.defaults.orientation;
+  const finalSeconds = seconds == null ? modelCapability.defaults.seconds : parseDurationSeconds(seconds);
+  const finalDefinition = definition || modelCapability.defaults.definition;
+
+  if (!modelCapability.limits.definitions.includes(finalDefinition)) {
     throw new Error(
-      `Model ${model} supports at most ${limits.maxReferenceImages} reference image${limits.maxReferenceImages > 1 ? 's' : ''}.`,
+      `Model ${finalModel} does not support definition ${finalDefinition}. Allowed: ${modelCapability.limits.definitions.join(', ')}`,
     );
   }
+  validateDurations(finalModel, modelCapability.limits.durations, finalSeconds);
+  if (!modelCapability.limits.orientations.includes(finalOrientation)) {
+    throw new Error(
+      `Model ${finalModel} does not support orientation ${finalOrientation}. Allowed: ${modelCapability.limits.orientations.join(', ')}`,
+    );
+  }
+  if (referenceImages.length > modelCapability.limits.maxReferenceImages) {
+    throw new Error(
+      `Model ${finalModel} supports at most ${modelCapability.limits.maxReferenceImages} reference image${modelCapability.limits.maxReferenceImages > 1 ? 's' : ''}.`,
+    );
+  }
+
+  const estimate =
+    modelCapability.pricing &&
+    modelCapability.pricing.estimates.find(
+      (item) =>
+        item.definition === finalDefinition &&
+        item.seconds === finalSeconds &&
+        item.orientation === finalOrientation,
+    );
+  const estimatedCredits = estimate ? estimate.credits : null;
+
+  return {
+    estimatedCredits,
+    selectedModelSummary: summarizeModelSelection(modelCapability, { estimatedCredits }),
+    selectionReason: model ? 'Model explicitly provided by caller.' : 'Using backend default model.',
+    orientation: finalOrientation,
+    model: finalModel,
+    seconds: finalSeconds,
+    definition: finalDefinition,
+  };
 }
 
 async function uploadReferenceImages(client, referenceImages, timeoutSec) {
@@ -201,8 +228,8 @@ async function runGenerateVideo({
   prompt,
   runId,
   skillDir,
-  orientation = '9:16',
-  model = 'veo-3.1-fast-exp',
+  orientation = null,
+  model = null,
   seconds = null,
   definition = null,
   referenceImages = [],
@@ -210,14 +237,14 @@ async function runGenerateVideo({
   timeoutSec = 600,
   client = defaultClient(),
 }) {
-  const finalSeconds = seconds == null ? defaultDurationForModel(model) : Number(seconds);
-  const finalDefinition = definition || defaultResolutionForModel(model);
-  validateParams({
-    model,
+  const resolved = await resolveGenerateVideoRequest({
     orientation,
-    seconds: finalSeconds,
-    definition: finalDefinition,
+    seconds,
+    definition,
+    model,
     referenceImages,
+    timeoutSec,
+    client,
   });
   const referenceImageKeys = await uploadReferenceImages(client, referenceImages, timeoutSec);
 
@@ -226,10 +253,10 @@ async function runGenerateVideo({
 
   const submit = await client.submitTask({
     prompt,
-    orientation,
-    seconds: finalSeconds,
-    definition: finalDefinition,
-    model,
+    orientation: resolved.orientation,
+    seconds: resolved.seconds,
+    definition: resolved.definition,
+    model: resolved.model,
     ...(referenceImageKeys.length > 0 ? { referenceImageKeys } : {}),
   });
   const taskId = submit.task_id;
@@ -241,10 +268,10 @@ async function runGenerateVideo({
     runId,
     taskId: String(taskId),
     status: String(submit.status || 'submitted'),
-    model,
-    orientation,
-    seconds: finalSeconds,
-    definition: finalDefinition,
+    model: resolved.model,
+    orientation: resolved.orientation,
+    seconds: resolved.seconds,
+    definition: resolved.definition,
     raw: { submit },
   });
   persistGenerateArtifacts(artifacts, initial);
@@ -259,10 +286,10 @@ async function runGenerateVideo({
       runId,
       taskId: String(taskId),
       status,
-      model,
-      orientation,
-      seconds: finalSeconds,
-      definition: finalDefinition,
+      model: resolved.model,
+      orientation: resolved.orientation,
+      seconds: resolved.seconds,
+      definition: resolved.definition,
       videoUrl,
       raw: { submit, status: raw },
       error:
@@ -286,10 +313,10 @@ async function runGenerateVideo({
       runId,
       taskId: String(taskId),
       status: String(submit.status || 'submitted'),
-      model,
-      orientation,
-      seconds: finalSeconds,
-      definition: finalDefinition,
+      model: resolved.model,
+      orientation: resolved.orientation,
+      seconds: resolved.seconds,
+      definition: resolved.definition,
       raw: { submit },
       error: { message: error instanceof Error ? error.message : String(error) },
     });
@@ -300,9 +327,9 @@ async function runGenerateVideo({
 
 module.exports = {
   buildGenerateResult,
-  validateParams,
   persistGenerateArtifacts,
   pollGenerate,
+  resolveGenerateVideoRequest,
   runGenerateVideo,
   runGenerateVideoStatus,
 };

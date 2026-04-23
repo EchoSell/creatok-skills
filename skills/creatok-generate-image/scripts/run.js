@@ -2,15 +2,12 @@
 const path = require('node:path');
 const readline = require('node:readline/promises');
 const { stdin, stdout } = require('node:process');
-const { runGenerateImage, runGenerateImageStatus } = require('../lib/generate-image');
+const { resolveGenerateImageRequest, runGenerateImage, runGenerateImageStatus } = require('../lib/generate-image');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
 
 function parseArgs(argv) {
   const args = {
-    model: 'nano-banana-2',
-    resolution: '2K',
-    n: 1,
     timeoutSec: 300,
     pollInterval: 3,
     yes: false,
@@ -49,6 +46,9 @@ function parseArgs(argv) {
 async function confirmGeneration(args) {
   console.log('About to generate image via CreatOK Open Skills proxy.');
   console.log(`- model: ${args.model}`);
+  console.log(`- model_summary: ${args.selectedModelSummary}`);
+  console.log(`- model_selection_reason: ${args.selectionReason}`);
+  if (args.estimatedCredits != null) console.log(`- estimated_credits: ${args.estimatedCredits}`);
   console.log(`- resolution: ${args.resolution}`);
   console.log(`- n: ${args.n}`);
   if (args.aspectRatio) console.log(`- aspect_ratio: ${args.aspectRatio}`);
@@ -63,11 +63,31 @@ async function confirmGeneration(args) {
   }
 }
 
+async function resolveCommandArgs(args) {
+  const resolved = await resolveGenerateImageRequest({
+    model: args.model || null,
+    resolution: args.resolution || null,
+    n: args.n == null ? null : args.n,
+    referenceImages: args.referenceImages,
+    timeoutSec: args.timeoutSec,
+  });
+
+  return {
+    ...args,
+    model: resolved.model,
+    resolution: resolved.resolution,
+    n: resolved.n,
+    estimatedCredits: resolved.estimatedCredits,
+    selectedModelSummary: resolved.selectedModelSummary,
+    selectionReason: resolved.selectionReason,
+  };
+}
+
 async function main() {
   const args = parseArgs(process.argv);
   if (!args.runId || (!args.prompt && !args.taskId)) {
     console.error(
-      'Usage: run.js --run_id <run_id> (--prompt <prompt> [--model nano-banana-2] [--resolution 2K] [--n 1] [--aspect_ratio W:H] [--reference_images /abs/a.png,/abs/b.jpg] [--yes] | --task_id <task_id> [--wait])',
+      'Usage: run.js --run_id <run_id> (--prompt <prompt> [--model <model_id>] [--resolution <resolution>] [--n <count>] [--aspect_ratio W:H] [--reference_images /abs/a.png,/abs/b.jpg] [--yes] | --task_id <task_id> [--wait])',
     );
     process.exit(2);
   }
@@ -91,8 +111,10 @@ async function main() {
     process.exit(result.status === 'succeeded' ? 0 : 1);
   }
 
-  if (!args.yes) {
-    const confirmed = await confirmGeneration(args);
+  const resolvedArgs = await resolveCommandArgs(args);
+
+  if (!resolvedArgs.yes) {
+    const confirmed = await confirmGeneration(resolvedArgs);
     if (!confirmed) {
       console.log('Canceled.');
       process.exit(2);
@@ -100,16 +122,16 @@ async function main() {
   }
 
   const result = await runGenerateImage({
-    prompt: args.prompt,
-    runId: args.runId,
+    prompt: resolvedArgs.prompt,
+    runId: resolvedArgs.runId,
     skillDir: SKILL_ROOT,
-    model: args.model,
-    resolution: args.resolution,
-    n: args.n,
-    aspectRatio: args.aspectRatio || null,
-    referenceImages: args.referenceImages,
-    timeoutSec: args.timeoutSec,
-    pollInterval: args.pollInterval,
+    model: resolvedArgs.model,
+    resolution: resolvedArgs.resolution,
+    n: resolvedArgs.n,
+    aspectRatio: resolvedArgs.aspectRatio || null,
+    referenceImages: resolvedArgs.referenceImages,
+    timeoutSec: resolvedArgs.timeoutSec,
+    pollInterval: resolvedArgs.pollInterval,
   });
 
   console.log(JSON.stringify({ ok: true, run_id: result.runId, task_id: result.taskId, images: result.images }));

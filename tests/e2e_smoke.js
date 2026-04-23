@@ -13,12 +13,222 @@ const IMAGE_SKILL_DIR = path.join(SKILLS_ROOT, 'creatok-generate-image');
 
 const { runAnalyzeVideo } = require('../skills/creatok-analyze-video/lib/analyze-video');
 const { runRecreateVideo } = require('../skills/creatok-recreate-video/lib/recreate-video');
-const { runGenerateVideo, runGenerateVideoStatus } = require('../skills/creatok-generate-video/lib/generate-video');
-const { runGenerateImage, runGenerateImageStatus } = require('../skills/creatok-generate-image/lib/generate-image');
+const {
+  runGenerateVideo,
+  runGenerateVideoStatus,
+  resolveGenerateVideoRequest,
+} = require('../skills/creatok-generate-video/lib/generate-video');
+const { summarizeModelSelection } = require('../skills/creatok-generate-video/lib/capabilities');
+const {
+  runGenerateImage,
+  runGenerateImageStatus,
+  resolveGenerateImageRequest,
+} = require('../skills/creatok-generate-image/lib/generate-image');
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function fakeCapabilities() {
+  return clone({
+    capabilities: {
+      image: {
+        default_model: 'nano-banana-2',
+        models: [
+          {
+            id: 'seedream-5.0-lite',
+            label: 'Seedream 5.0 Lite',
+            defaults: { resolution: '2K', n: 1 },
+            limits: {
+              resolutions: ['2K', '4K'],
+              n: { min: 1, max: 4 },
+              aspect_ratios: ['1:1', '16:9', '9:16'],
+              max_reference_images: 5,
+            },
+            pricing: {
+              currency: 'credits',
+              unit: 'image',
+              by_resolution: { '2K': 1, '4K': 1 },
+            },
+          },
+          {
+            id: 'nano-banana-pro',
+            label: 'Nano Banana Pro',
+            defaults: { resolution: '2K', n: 1 },
+            limits: {
+              resolutions: ['1K', '2K', '4K'],
+              n: { min: 1, max: 4 },
+              aspect_ratios: ['1:1', '16:9', '9:16'],
+              max_reference_images: 5,
+            },
+            pricing: {
+              currency: 'credits',
+              unit: 'image',
+              by_resolution: { '1K': 1, '2K': 2, '4K': 3 },
+            },
+          },
+          {
+            id: 'nano-banana-2',
+            label: 'Nano Banana 2',
+            defaults: { resolution: '2K', n: 1 },
+            limits: {
+              resolutions: ['1K', '2K', '4K'],
+              n: { min: 1, max: 4 },
+              aspect_ratios: ['1:1', '16:9', '9:16'],
+              max_reference_images: 5,
+            },
+            pricing: {
+              currency: 'credits',
+              unit: 'image',
+              by_resolution: { '1K': 1, '2K': 1, '4K': 2 },
+            },
+          },
+          {
+            id: 'gpt-image-2',
+            label: 'GPT Image 2',
+            defaults: { resolution: '2K', n: 1 },
+            limits: {
+              resolutions: ['1K', '2K', '4K'],
+              n: { min: 1, max: 4 },
+              aspect_ratios: ['1:1', '16:9', '9:16'],
+              max_reference_images: 5,
+            },
+            pricing: {
+              currency: 'credits',
+              unit: 'image',
+              by_resolution: { '1K': 1, '2K': 1, '4K': 1 },
+            },
+          },
+        ],
+      },
+      video: {
+        default_model: 'veo-3.1-fast-exp',
+        models: [
+          {
+            id: 'doubao-seedance-2',
+            label: 'Seedance 2',
+            defaults: { orientation: '9:16', seconds: 4, definition: '480p' },
+            limits: {
+              definitions: ['480p', '720p'],
+              orientations: ['16:9', '9:16', '1:1', '4:3', '3:4'],
+              durations: { min: 4, max: 15, enum: null },
+              max_reference_images: 5,
+            },
+            pricing: {
+              currency: 'credits',
+              unit: 'video',
+              estimates: [
+                { definition: '480p', seconds: 4, orientation: '16:9', credits: 8 },
+                { definition: '480p', seconds: 4, orientation: '9:16', credits: 8 },
+                { definition: '480p', seconds: 4, orientation: '1:1', credits: 7 },
+                { definition: '480p', seconds: 4, orientation: '4:3', credits: 7 },
+                { definition: '480p', seconds: 4, orientation: '3:4', credits: 7 },
+                { definition: '720p', seconds: 4, orientation: '16:9', credits: 19 },
+                { definition: '720p', seconds: 4, orientation: '9:16', credits: 19 },
+                { definition: '720p', seconds: 4, orientation: '1:1', credits: 16 },
+                { definition: '720p', seconds: 4, orientation: '4:3', credits: 19 },
+                { definition: '720p', seconds: 4, orientation: '3:4', credits: 19 },
+              ],
+            },
+          },
+          {
+            id: 'doubao-seedance-2-fast',
+            label: 'Seedance 2 Fast',
+            defaults: { orientation: '9:16', seconds: 4, definition: '480p' },
+            limits: {
+              definitions: ['480p', '720p'],
+              orientations: ['16:9', '9:16', '1:1', '4:3', '3:4'],
+              durations: { min: 4, max: 15, enum: null },
+              max_reference_images: 5,
+            },
+            pricing: {
+              currency: 'credits',
+              unit: 'video',
+              estimates: [
+                { definition: '480p', seconds: 4, orientation: '16:9', credits: 7 },
+                { definition: '480p', seconds: 4, orientation: '9:16', credits: 7 },
+                { definition: '480p', seconds: 4, orientation: '1:1', credits: 6 },
+                { definition: '480p', seconds: 4, orientation: '4:3', credits: 6 },
+                { definition: '480p', seconds: 4, orientation: '3:4', credits: 6 },
+                { definition: '720p', seconds: 4, orientation: '16:9', credits: 17 },
+                { definition: '720p', seconds: 4, orientation: '9:16', credits: 17 },
+                { definition: '720p', seconds: 4, orientation: '1:1', credits: 14 },
+                { definition: '720p', seconds: 4, orientation: '4:3', credits: 17 },
+                { definition: '720p', seconds: 4, orientation: '3:4', credits: 17 },
+              ],
+            },
+          },
+          {
+            id: 'sora-2',
+            label: 'Sora 2',
+            defaults: { orientation: '9:16', seconds: 12, definition: '720p' },
+            limits: {
+              definitions: ['720p'],
+              orientations: ['9:16', '16:9'],
+              durations: { min: null, max: null, enum: [12] },
+              max_reference_images: 1,
+            },
+            pricing: {
+              currency: 'credits',
+              unit: 'video',
+              estimates: [
+                { definition: '720p', seconds: 12, orientation: '9:16', credits: 30 },
+                { definition: '720p', seconds: 12, orientation: '16:9', credits: 30 },
+              ],
+            },
+          },
+          {
+            id: 'veo-3.1-fast-exp',
+            label: 'Veo 3.1 Fast',
+            defaults: { orientation: '9:16', seconds: 8, definition: '720p' },
+            limits: {
+              definitions: ['720p'],
+              orientations: ['9:16', '16:9'],
+              durations: { min: null, max: 8, enum: null },
+              max_reference_images: 3,
+            },
+            pricing: {
+              currency: 'credits',
+              unit: 'video',
+              estimates: [
+                { definition: '720p', seconds: 8, orientation: '9:16', credits: 3 },
+                { definition: '720p', seconds: 8, orientation: '16:9', credits: 3 },
+              ],
+            },
+          },
+          {
+            id: 'veo-3.1-exp',
+            label: 'Veo 3.1 Quality',
+            defaults: { orientation: '9:16', seconds: 8, definition: '720p' },
+            limits: {
+              definitions: ['720p'],
+              orientations: ['9:16', '16:9'],
+              durations: { min: null, max: 8, enum: null },
+              max_reference_images: 3,
+            },
+            pricing: {
+              currency: 'credits',
+              unit: 'video',
+              estimates: [
+                { definition: '720p', seconds: 8, orientation: '9:16', credits: 12 },
+                { definition: '720p', seconds: 8, orientation: '16:9', credits: 12 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  });
+}
 
 class FakeClient {
-  constructor() {
+  constructor(capabilities = fakeCapabilities()) {
     this.uploadedFiles = [];
+    this.capabilities = capabilities;
+  }
+
+  async getCapabilities() {
+    return this.capabilities;
   }
 
   async analyze() {
@@ -258,6 +468,19 @@ test('generate-video defaults seconds and definition by model', async () => {
   cleanup([runDir]);
 });
 
+test('generate-video uses backend default model when model is omitted', async () => {
+  const resolved = await resolveGenerateVideoRequest({
+    referenceImages: [],
+    client: new FakeClient(),
+  });
+
+  assert.equal(resolved.model, 'veo-3.1-fast-exp');
+  assert.equal(resolved.selectedModelSummary, 'Veo 3.1 Fast. Estimated cost: 3 credits.');
+  assert.match(resolved.selectedModelSummary, /Estimated cost: 3 credits/);
+  assert.equal(resolved.selectionReason, 'Using backend default model.');
+  assert.equal(resolved.estimatedCredits, 3);
+});
+
 test('generate-video defaults seconds and definition for doubao-seedance-2', async () => {
   const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-generate-seedance-defaults');
   cleanup([runDir]);
@@ -277,7 +500,7 @@ test('generate-video defaults seconds and definition for doubao-seedance-2', asy
   assert.deepEqual(client.lastSubmitPayload, {
     prompt: 'A longer product explainer clip',
     orientation: '9:16',
-    seconds: 15,
+    seconds: 4,
     definition: '480p',
     model: 'doubao-seedance-2',
   });
@@ -303,7 +526,7 @@ test('generate-video defaults seconds and definition for doubao-seedance-2-fast'
   assert.deepEqual(client.lastSubmitPayload, {
     prompt: 'A faster product variation test clip',
     orientation: '9:16',
-    seconds: 15,
+    seconds: 4,
     definition: '480p',
     model: 'doubao-seedance-2-fast',
   });
@@ -340,6 +563,21 @@ test('generate-video validates minimum duration for seedance-2', async () => {
   );
 });
 
+test('generate-video rejects non-integer seconds before submit', async () => {
+  await assert.rejects(
+    () =>
+      runGenerateVideo({
+        prompt: 'test',
+        runId: 'smoke-generate-invalid-seconds',
+        skillDir: GENERATE_SKILL_DIR,
+        model: 'veo-3.1-fast-exp',
+        seconds: 1.5,
+        client: new FakeClient(),
+      }),
+    /seconds must be a finite integer/,
+  );
+});
+
 test('generate-video validates seedance-2 aspect ratio', async () => {
   await assert.rejects(
     () =>
@@ -367,6 +605,44 @@ test('generate-video rejects sora-2-exp', async () => {
       }),
     /Unsupported model: sora-2-exp/,
   );
+});
+
+test('generate-video supports new model from capabilities payload without code changes', async () => {
+  const runDir = path.join(GENERATE_SKILL_DIR, '.artifacts', 'smoke-generate-new-capability-model');
+  cleanup([runDir]);
+
+  const capabilities = fakeCapabilities();
+  capabilities.capabilities.video.models.push({
+    id: 'veo-x',
+    label: 'Veo X',
+    defaults: { orientation: '16:9', seconds: 6, definition: '1080p' },
+    limits: {
+      definitions: ['720p', '1080p'],
+      orientations: ['16:9', '9:16'],
+      durations: { min: 4, max: 10, enum: null },
+      max_reference_images: 2,
+    },
+  });
+
+  const client = new FakeClient(capabilities);
+  await runGenerateVideo({
+    prompt: 'A new model test clip',
+    runId: 'smoke-generate-new-capability-model',
+    skillDir: GENERATE_SKILL_DIR,
+    model: 'veo-x',
+    client,
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.deepEqual(client.lastSubmitPayload, {
+    prompt: 'A new model test clip',
+    orientation: '16:9',
+    seconds: 6,
+    definition: '1080p',
+    model: 'veo-x',
+  });
+  cleanup([runDir]);
 });
 
 test('generate-video uploads local reference images before submit', async () => {
@@ -488,9 +764,49 @@ test('generate-video can query existing task id', async () => {
   cleanup([runDir]);
 });
 
+test('generate-video fails fast on invalid capabilities contract', async () => {
+  const client = new FakeClient({
+    capabilities: {
+      image: fakeCapabilities().capabilities.image,
+      video: {
+        default_model: 'veo-3.1-fast-exp',
+        models: [
+          {
+            id: 'veo-3.1-fast-exp',
+            label: 'Veo 3.1 Fast',
+            defaults: { orientation: '9:16', seconds: 8, definition: '720p' },
+            limits: {
+              definitions: ['720p'],
+              orientations: ['9:16'],
+              durations: { min: null, max: null, enum: null },
+              max_reference_images: 3,
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  await assert.rejects(
+    () =>
+      runGenerateVideo({
+        prompt: 'test',
+        runId: 'smoke-generate-invalid-contract',
+        skillDir: GENERATE_SKILL_DIR,
+        client,
+      }),
+    /Invalid capabilities contract/,
+  );
+});
+
 class FakeImageClient {
-  constructor() {
+  constructor(capabilities = fakeCapabilities()) {
     this.uploadedFiles = [];
+    this.capabilities = capabilities;
+  }
+
+  async getCapabilities() {
+    return this.capabilities;
   }
 
   async submitImageTask(payload) {
@@ -619,11 +935,101 @@ test('generate-image validates unsupported model', async () => {
         prompt: 'test',
         runId: 'smoke-image-invalid-model',
         skillDir: IMAGE_SKILL_DIR,
-        model: 'gpt-image-1',
+        model: 'totally-unsupported-model',
         resolution: '2K',
         client: new FakeImageClient(),
       }),
     /Unsupported model/,
+  );
+});
+
+test('generate-image accepts gpt-image-2', async () => {
+  const runDir = path.join(IMAGE_SKILL_DIR, '.artifacts', 'smoke-image-gpt-image-2');
+  cleanup([runDir]);
+
+  const result = await runGenerateImage({
+    prompt: 'test',
+    runId: 'smoke-image-gpt-image-2',
+    skillDir: IMAGE_SKILL_DIR,
+    model: 'gpt-image-2',
+    resolution: '2K',
+    client: new FakeImageClient(),
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.equal(result.status, 'succeeded');
+  assert.equal(result.images.length, 2);
+  cleanup([runDir]);
+});
+
+test('generate-image uses default model and params from capabilities payload', async () => {
+  const runDir = path.join(IMAGE_SKILL_DIR, '.artifacts', 'smoke-image-capability-defaults');
+  cleanup([runDir]);
+
+  const capabilities = fakeCapabilities();
+  capabilities.capabilities.image.default_model = 'gpt-image-2';
+  const gptModel = capabilities.capabilities.image.models.find((model) => model.id === 'gpt-image-2');
+  gptModel.defaults = { resolution: '4K', n: 3 };
+
+  const client = new FakeImageClient(capabilities);
+  await runGenerateImage({
+    prompt: 'test defaults',
+    runId: 'smoke-image-capability-defaults',
+    skillDir: IMAGE_SKILL_DIR,
+    client,
+    pollInterval: 0.01,
+    timeoutSec: 1,
+  });
+
+  assert.deepEqual(client.lastImageSubmitPayload, {
+    prompt: 'test defaults',
+    model: 'gpt-image-2',
+    resolution: '4K',
+    n: 3,
+    aspectRatio: null,
+  });
+  cleanup([runDir]);
+});
+
+test('generate-image uses backend default model when model is omitted', async () => {
+  const resolved = await resolveGenerateImageRequest({
+    referenceImages: [],
+    client: new FakeImageClient(),
+  });
+
+  assert.equal(resolved.model, 'nano-banana-2');
+  assert.equal(resolved.selectedModelSummary, 'Nano Banana 2. Estimated cost: 1 credits.');
+  assert.match(resolved.selectedModelSummary, /Estimated cost: 1 credits/);
+  assert.equal(resolved.selectionReason, 'Using backend default model.');
+  assert.equal(resolved.estimatedCredits, 1);
+});
+
+test('generate-image respects explicitly provided model', async () => {
+  const resolved = await resolveGenerateImageRequest({
+    model: 'gpt-image-2',
+    referenceImages: [],
+    client: new FakeImageClient(),
+  });
+
+  assert.equal(resolved.model, 'gpt-image-2');
+  assert.equal(resolved.selectionReason, 'Model explicitly provided by caller.');
+});
+
+test('generate-image rejects model removed from capabilities payload', async () => {
+  const capabilities = fakeCapabilities();
+  capabilities.capabilities.image.models = capabilities.capabilities.image.models.filter((model) => model.id !== 'gpt-image-2');
+
+  await assert.rejects(
+    () =>
+      runGenerateImage({
+        prompt: 'test',
+        runId: 'smoke-image-removed-model',
+        skillDir: IMAGE_SKILL_DIR,
+        model: 'gpt-image-2',
+        client: new FakeImageClient(capabilities),
+      }),
+    /Unsupported model: gpt-image-2/,
   );
 });
 
@@ -642,6 +1048,21 @@ test('generate-image validates resolution incompatible with seedream', async () 
   );
 });
 
+test('generate-image rejects non-integer n before submit', async () => {
+  await assert.rejects(
+    () =>
+      runGenerateImage({
+        prompt: 'test',
+        runId: 'smoke-image-invalid-n',
+        skillDir: IMAGE_SKILL_DIR,
+        model: 'nano-banana-2',
+        n: 1.5,
+        client: new FakeImageClient(),
+      }),
+    /n must be a finite integer/,
+  );
+});
+
 test('generate-image can query existing task id', async () => {
   const runDir = path.join(IMAGE_SKILL_DIR, '.artifacts', 'smoke-image-status');
   cleanup([runDir]);
@@ -657,4 +1078,42 @@ test('generate-image can query existing task id', async () => {
   assert.equal(result.images.length, 2);
   assert.equal(fs.existsSync(path.join(result.artifactsDir, 'outputs', 'result.json')), true);
   cleanup([runDir]);
+});
+
+test('generate-image fails fast on invalid capabilities contract', async () => {
+  const client = new FakeImageClient({
+    capabilities: {
+      image: {
+        default_model: 'nano-banana-2',
+        models: [
+          {
+            id: 'nano-banana-2',
+            label: 'Nano Banana 2',
+            defaults: { resolution: '2K' },
+            limits: {
+              resolutions: ['2K'],
+              n: { min: 1, max: 4 },
+              max_reference_images: 5,
+            },
+          },
+        ],
+      },
+      video: fakeCapabilities().capabilities.video,
+    },
+  });
+
+  await assert.rejects(
+    () =>
+      runGenerateImage({
+        prompt: 'test',
+        runId: 'smoke-image-invalid-contract',
+        skillDir: IMAGE_SKILL_DIR,
+        client,
+      }),
+    /Invalid capabilities contract/,
+  );
+});
+
+test('summarizeModelSelection returns minimal label-only summary when credits are unavailable', async () => {
+  assert.equal(summarizeModelSelection({ label: 'Veo 3.1 Fast' }), 'Veo 3.1 Fast.');
 });

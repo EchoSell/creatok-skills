@@ -66,58 +66,18 @@ metadata:
 
 ## Model Selection Rules
 
-- `Seedance 2`
-  - actual model id: `doubao-seedance-2`
-  - best for longer clips, multi-image guidance, and product videos that need stronger visual control
-  - supported resolutions in the current Open Skills endpoint: **480p**, **720p**
-  - supported duration in the current Open Skills endpoint: **4-15s**
-  - supported aspect ratios in the current Open Skills endpoint: **9:16**, **16:9**, **1:1**, **4:3**, **3:4**
+The skill must read model list, defaults, and hard limits from the CreatOK capabilities endpoint at runtime instead of hardcoding them locally.
 
-- `Seedance 2 Fast`
-  - actual model id: `doubao-seedance-2-fast`
-  - faster variant for the same Seedance-style workflow when iteration speed matters more than the final pass
-  - supported resolutions in the current Open Skills endpoint: **480p**, **720p**
-  - supported duration in the current Open Skills endpoint: **4-15s**
-  - supported aspect ratios in the current Open Skills endpoint: **9:16**, **16:9**, **1:1**, **4:3**, **3:4**
+Keep the local client thin:
 
-- `Sora 2`
-  - actual model id: `sora-2`
-  - supported resolutions: **720p**
-  - supported duration: **12s**
-  - supported aspect ratios: **9:16**, **16:9**
-
-- `Veo 3.1 Fast`
-  - actual model id: `veo-3.1-fast-exp`
-  - fastest and lowest-cost option
-  - best for product demos, short visual tests, and previews
-  - supported resolutions: **720p**
-  - max video length: **8 seconds**
-
-- `Veo 3.1 Quality`
-  - actual model id: `veo-3.1-exp`
-  - medium-cost option
-  - best for formal product demos and higher-quality final clips
-  - supported resolutions: **720p**
-  - max video length: **8 seconds**
-
-The model should recommend a model before generation instead of blindly using a default.
-The recommendation should follow these principles:
-
-- prefer `Seedance 2` (`doubao-seedance-2`) for longer clips, more flexible aspect ratios, and image-guided product videos
-- prefer `Seedance 2 Fast` (`doubao-seedance-2-fast`) for faster iteration when the user wants the Seedance path but cares more about speed than the final pass
-- prefer `Sora 2` (`sora-2`) for 12-second generation
-- prefer `Veo 3.1 Fast` (`veo-3.1-fast-exp`) for previews, quick testing, and lightweight product demo clips
-- prefer `Veo 3.1 Quality` (`veo-3.1-exp`) for formal product demos and higher-quality final clips
+- use the returned default model unless the user explicitly chooses another supported model
+- validate only hard execution constraints such as definition, duration, orientation, and reference-image cap
+- keep user-facing model explanation minimal and avoid depending on provider, family, or hint-style metadata
 
 If a chosen plan conflicts with model limits, the model should explain the limitation, suggest a workable plan, and wait for user confirmation before generating.
 
-Current implementation defaults to the lower supported `definition` for each model, which is `480p` for `Seedance 2` and `720p` for the other listed models.
+Model list, defaults, and hard limits such as supported definitions, durations, orientations, and reference image caps must be read from the CreatOK capabilities endpoint at runtime instead of being hardcoded in this skill.
 Reference images are supported by uploading local image files first, then passing the uploaded reference to the video task.
-- `Seedance 2` supports at most 5 reference images in the current Open Skills endpoint
-- `Seedance 2 Fast` supports at most 5 reference images in the current Open Skills endpoint
-- `Sora 2` supports at most 1 reference image
-- `Veo 3.1 Fast` supports at most 3 reference images
-- `Veo 3.1 Quality` supports at most 3 reference images
 
 ## Multi-Segment Rules
 
