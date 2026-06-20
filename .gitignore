@@ -2,9 +2,12 @@
 __pycache__/
 *.py[cod]
 
-# Local artifacts / secrets
+# Local artifacts / secrets — never commit
 .artifacts/
 .env
+.env.*
+.npmrc
+*.local
 config.local.json
 dist/
 
@@ -16,6 +19,3 @@ node_modules/
 
 # Project-local Codex skills
 .codex/
-
-# CLI lives in its own repository (EchoSell/creatok-cli)
-creatok-cli/
