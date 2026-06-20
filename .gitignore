@@ -16,3 +16,6 @@ node_modules/
 
 # Project-local Codex skills
 .codex/
+
+# CLI lives in its own repository (EchoSell/creatok-cli)
+creatok-cli/

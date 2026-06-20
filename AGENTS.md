@@ -1,22 +1,21 @@
 # AGENTS.md
 
-## Skill-First Principles
+This repository is the **public front** for CreatOK Skills: install instructions
+and documentation. It contains no runtime code.
 
-`creatok-skills` is an agent runtime project, not a traditional end-user application.
+## Where things live
 
-When building or modifying this repository:
+- **Skill content** (`SKILL.md` + `references/`) and the **`creatok` CLI** that
+  serves and installs them live in the (private) `EchoSell/creatok-cli`
+  repository. The skills are `go:embed`-ed into the CLI binary, so the CLI is the
+  single source of truth and the single distribution unit.
+- Do **not** add `skills/` back into this repo. Editing skills here would
+  reintroduce version drift with the CLI. Change skill content in
+  `creatok-cli/skills/` instead.
 
-- prefer remote structured data over local hardcoded decision logic
-- keep local code as a thin execution client: fetch, validate, resolve defaults, submit, poll, and persist artifacts
-- let the model make runtime choices when the decision depends on user context, remote capabilities, structure libraries, or retrieval results
-- treat `SKILL.md` files and runtime artifacts as instructions for agents first, not product copy for end users
-- avoid embedding heuristic recommendation logic in local JS unless it is a hard validation or execution constraint
-- if a capability, model description, default, or strategy may change over time, move it to a remote API or structured knowledge source instead of freezing it in the repo
+## What belongs here
 
-## Packaging Boundary
+- `README.md` — user-facing install and usage docs.
+- Public installer scripts, once the public binary channel is live.
 
-- Treat each publishable skill directory under `skills/` as an independent packaging and installation unit.
-- Runtime files required by a skill must live inside that skill's own directory.
-- Do not introduce runtime dependencies on repository-level `lib/`, `shared/`, or sibling skill folders, because users may install only one skill.
-- If two skills need similar logic, duplicate the minimal runtime code inside each skill unless the publishing model is explicitly changed first.
-- Before adding any shared module, verify that it will be packaged together with every consuming skill; if not, do not add the shared dependency.
+Keep this repo thin and documentation-only.

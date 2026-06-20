@@ -1,74 +1,57 @@
 # CreatOK Skills
 
-A set of skills for TikTok creators, sellers, and operators to:
+AI Agent skills for TikTok creators, sellers, and operators:
 
-- analyze videos
-- recreate reference videos
-- generate new videos
-- generate AI images
+- **analyze** TikTok videos (script, storyboard, conversion logic)
+- **recreate** a reference video for your own product
+- **generate** TikTok videos
+- **generate** AI images
 
-These skills work through CreatOK's remote APIs. You only need to install them and configure your API key.
+The skills are a thin layer over the **`creatok` CLI**, which handles all API
+interaction (auth, upload, generation, polling, artifacts). You install the CLI,
+and the CLI installs the skills.
 
-## Manual Install (Without CLI)
+## Install
 
-Clone the repository first:
-
-```bash
-git clone https://github.com/EchoSell/creatok-skills.git
-cd creatok-skills
-```
-
-Install to OpenClaw:
+### 1. Install the `creatok` CLI
 
 ```bash
-mkdir -p ~/.agents/skills
-cp -R skills/* ~/.agents/skills/
+npm install -g @creatok/cli
 ```
 
-Install to Claude Code:
+Verify:
 
 ```bash
-mkdir -p ~/.claude/skills
-cp -R skills/* ~/.claude/skills/
+creatok version
 ```
 
-Install to Codex:
+### 2. Install the skills
+
+The skills ship embedded in the CLI, so they always match the CLI version:
 
 ```bash
-mkdir -p ~/.codex/skills
-cp -R skills/* ~/.codex/skills/
+creatok skills install
 ```
 
-After installation, you should see these skills:
+This writes the skills into your agent's skill directory (`~/.claude/skills`,
+`~/.codex/skills`, `~/.agents/skills`). Restart your agent (Claude Code,
+OpenClaw, Codex) and the skills appear.
 
-```bash
-creatok-analyze-video
-creatok-recreate-video
-creatok-generate-video
-creatok-generate-image
-```
+To keep skills in sync after a CLI upgrade, `creatok doctor` reports any drift;
+just run `creatok skills install` again.
 
-## Configure Your API Key
+## Configure your API key
 
-Generate your API key at [https://www.creatok.ai/app/workspace/api-keys](https://www.creatok.ai/app/workspace/api-keys).
-
-Set your CreatOK Open Skills API key:
+Generate a key at [creatok.ai/app/workspace/api-keys](https://www.creatok.ai/app/workspace/api-keys),
+then set it:
 
 ```bash
 export CREATOK_API_KEY="ok_xxx"
 ```
 
-If you use OpenClaw, you can also configure the key in `openclaw.json`.
+## How to use
 
-Add the `CREATOK_API_KEY` field under the `env` section in `$OPENCLAW_STATE_DIR/openclaw.json`:
-
-```text
-Please help me set the `env` field in `$OPENCLAW_STATE_DIR/openclaw.json` and add `CREATOK_API_KEY` with the value `{your generated key}`.
-```
-
-## How To Use
-
-Just say things like these in chat:
+Just say things like these to your agent:
 
 Analyze a TikTok video:
 
@@ -100,10 +83,9 @@ Check an existing generation task:
 Check this video generation task for me: task_xxx
 ```
 
-## What These Skills Are Good For
+## What these skills are good for
 
-- analyzing selling videos
-- breaking down viral scripts
+- analyzing selling videos and breaking down viral scripts
 - recreating competitor or reference videos for your own product
 - generating a final video from an approved script or brief
 - generating AI images for marketing, social media, or creative projects
@@ -111,17 +93,18 @@ Check this video generation task for me: task_xxx
 
 ## FAQ
 
-I installed the skills but cannot see them yet:
+**I installed the CLI but the skills don't show up.**
+Run `creatok skills install`, then restart your agent.
 
-- Restart OpenClaw, Claude Code, or Codex and try again.
+**`creatok doctor` says my skills are out of sync.**
+Run `creatok skills install` to resync them to the current CLI version.
 
-Why can each skill be installed on its own:
+**My API key is configured but calls still fail.**
+- Check `CREATOK_API_KEY` is exported in the same shell.
+- Check your machine can reach [creatok.ai](https://www.creatok.ai).
+- If failures persist, upgrade the CLI (`npm update -g @creatok/cli`).
 
-- Each skill now includes its own runtime files, so it can be reviewed and packaged without depending on a sibling shared directory.
-
-My API key is configured but calls still fail:
-
-- Check `CREATOK_API_KEY`
-- Check whether your machine can access [https://www.creatok.ai/app/workspace/api-keys](https://www.creatok.ai/app/workspace/api-keys)
-
-If you need to report an issue to an engineer, include the error message and the skill name you were using.
+**Where did the old `cp skills/* ~/.claude/skills` install go?**
+The skills are now distributed through the CLI (`creatok skills install`) so
+their content always matches the CLI version. The old copy-the-folder method is
+no longer used.
