@@ -6,12 +6,15 @@ AI Agent skills for TikTok creators, sellers, and operators:
 - **recreate** a reference video for your own product
 - **generate** TikTok videos
 - **generate** AI images
+- **create digital humans** (avatars) and use them in identity-preserving videos
 
 The skills are a thin layer over the **`creatok` CLI**, which handles all API
 interaction (auth, upload, generation, polling, artifacts). You install the CLI,
 and the CLI installs the skills.
 
 ## Install
+
+**Requires** Node.js 18+ and npm.
 
 ### 1. Install the `creatok` CLI
 
@@ -33,9 +36,15 @@ The skills ship embedded in the CLI, so they always match the CLI version:
 creatok skills install
 ```
 
-This writes the skills into your agent's skill directory (`~/.claude/skills`,
-`~/.codex/skills`, `~/.agents/skills`). Restart your agent (Claude Code,
-OpenClaw, Codex) and the skills appear.
+This detects and writes into your agent's skill directory (`~/.claude/skills`,
+`~/.codex/skills`, or `~/.agents/skills`). If your agent stores skills somewhere
+else — or `creatok skills install` didn't pick it up — point it explicitly:
+
+```bash
+creatok skills install --dir ~/.codex/skills
+```
+
+Restart your agent (Claude Code, OpenClaw, Codex) and the skills appear.
 
 To keep skills in sync after a CLI upgrade, `creatok doctor` reports any drift;
 just run `creatok skills install` again.
@@ -77,6 +86,12 @@ Generate an AI image:
 Generate an image of a sunset over mountains in 4K resolution
 ```
 
+Create and use a digital human (avatar):
+
+```text
+Create a digital human from these photos, then use it in a talking product video
+```
+
 Check an existing generation task:
 
 ```text
@@ -89,6 +104,7 @@ Check this video generation task for me: task_xxx
 - recreating competitor or reference videos for your own product
 - generating a final video from an approved script or brief
 - generating AI images for marketing, social media, or creative projects
+- creating digital humans (avatars) for identity-preserving talking videos
 - recovering an interrupted generation task without starting over
 
 ## FAQ
@@ -102,7 +118,7 @@ Run `creatok skills install` to resync them to the current CLI version.
 **My API key is configured but calls still fail.**
 - Check `CREATOK_API_KEY` is exported in the same shell.
 - Check your machine can reach [creatok.ai](https://www.creatok.ai).
-- If failures persist, upgrade the CLI (`npm update -g @creatok/cli`).
+- If failures persist, upgrade the CLI: `npm install -g @creatok/cli@latest` (if that reports `ETARGET`, add `--registry=https://registry.npmjs.org` to bypass a lagging npm mirror).
 
 **Where did the old `cp skills/* ~/.claude/skills` install go?**
 The skills are now distributed through the CLI (`creatok skills install`) so
