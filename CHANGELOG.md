@@ -3,6 +3,11 @@
 Changes in stable releases of CreatOK CLI and its bundled Skills. Dates for
 historical versions reflect their tagged commits and may differ from publication dates.
 
+## 1.2.12 — 2026-11-17
+
+- Improved validation of image, video, and digital human inputs.
+- Fixed video frame orientation checks.
+
 ## 1.2.11 — 2026-11-14
 
 - Upload TikTok Shop videos up to 500 MiB.
