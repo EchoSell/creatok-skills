@@ -12,6 +12,13 @@ The skills are a thin layer over the **`creatok` CLI**, which handles all API
 interaction (auth, upload, generation, polling, artifacts). You install the CLI,
 and the CLI installs the skills.
 
+## CLI updates
+
+See the [CLI changelog](CHANGELOG.md) for release notes before upgrading.
+Check your installed version with `creatok version`, then update with
+`npm install -g @creatok/cli@latest` and run `creatok skills install` to sync
+your skills.
+
 ## Install
 
 **Requires** Node.js 18+ and npm.

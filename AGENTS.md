@@ -19,3 +19,8 @@ and documentation. It contains no runtime code.
 - Public installer scripts, once the public binary channel is live.
 
 Keep this repo thin and documentation-only.
+
+## CLI release notes
+
+- Keep `CHANGELOG.md` user-facing and update it for every stable CLI release; do not include preview releases. Record the exact version, release date, and meaningful changes in concise, plain language users can understand. Avoid unnecessary internal technical details; publish the update alongside the release.
+- Keep the README link to the changelog discoverable for users considering an upgrade.
