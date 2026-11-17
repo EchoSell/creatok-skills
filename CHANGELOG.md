@@ -3,6 +3,10 @@
 Changes in stable releases of CreatOK CLI and its bundled Skills. Dates for
 historical versions reflect their tagged commits and may differ from publication dates.
 
+## 1.2.13 — 2026-11-17
+
+- See what changed before updating CreatOK CLI.
+
 ## 1.2.12 — 2026-11-17
 
 - Improved validation of image, video, and digital human inputs.
