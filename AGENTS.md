@@ -22,5 +22,5 @@ Keep this repo thin and documentation-only.
 
 ## CLI release notes
 
-- Treat `CHANGELOG.md` as a public copy of the source changelog in `creatok-cli/internal/update/CHANGELOG.md`; synchronize it for every stable CLI release and do not include preview releases. Record the exact version, release date, and meaningful changes in concise, plain language users can understand. Avoid unnecessary internal technical details; publish the update alongside the release.
+- Treat `CHANGELOG.md` as a public copy of the source changelog in `creatok-cli/internal/update/CHANGELOG.md`; synchronize it for every stable CLI release and do not include preview releases. Record the exact version, release date, and meaningful changes in concise, plain language users can understand. Avoid unnecessary internal technical details; push the synchronized public copy and verify it is accessible before the CLI release.
 - Keep the README link to the changelog discoverable for users considering an upgrade.
