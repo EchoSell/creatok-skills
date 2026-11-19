@@ -3,6 +3,12 @@
 Changes in stable releases of CreatOK CLI and its bundled Skills. Dates for
 historical versions reflect their tagged commits and may differ from publication dates.
 
+## 1.2.15 — 2026-11-19
+
+- Query capabilities by domain or model to find relevant options more easily. The `--domain` option is now required.
+- Improved image and video model validation and support for image quality options.
+- Accept capability fields separated by spaces as well as commas.
+
 ## 1.2.14 — 2026-11-19
 
 - Start another content analysis while an earlier request is still pending.
