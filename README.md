@@ -12,6 +12,10 @@ The skills are a thin layer over the **`creatok` CLI**, which handles all API
 interaction (auth, upload, generation, polling, artifacts). You install the CLI,
 and the CLI installs the skills.
 
+## Platform plugins
+
+For Codex, Doubao and WorkBuddy plugin downloads and source provenance, see [platform plugins](PLUGIN-RELEASES.md).
+
 ## CLI updates
 
 See the [CLI changelog](CHANGELOG.md) for release notes before upgrading.

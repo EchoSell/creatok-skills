@@ -19,3 +19,9 @@ node_modules/
 
 # Project-local Codex skills
 .codex/
+
+# Versioned platform release archives
+!plugins/codex/plugin/*.zip
+!plugins/doubao/plugin/*.zip
+!plugins/workbuddy/plugin/*.zip
+!plugins/workbuddy/plugin/skills/*.zip

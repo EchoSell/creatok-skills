@@ -18,7 +18,7 @@ and documentation. It contains no runtime code.
 - `README.md` — user-facing install and usage docs.
 - Public installer scripts, once the public binary channel is live.
 
-Keep this repo thin and documentation-only.
+Platform plugin release archives are an exception to the documentation-only rule. Store them under `plugins/<platform>/plugin/`; their source of truth remains `EchoSell/creatok-connector-packages`, not the CLI skills. For every platform package release, sync the validated artifacts built from the exact release commit, update `PLUGIN-RELEASES.md` and `PLUGIN-SHA256SUMS`, and verify the published copy. Keep CLI skill content out of this repository.
 
 ## CLI release notes
 
