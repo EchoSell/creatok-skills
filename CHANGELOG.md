@@ -3,6 +3,12 @@
 Changes in stable releases of CreatOK CLI and its bundled Skills. Dates for
 historical versions reflect their tagged commits and may differ from publication dates.
 
+## 1.2.14 — 2026-11-19
+
+- Start another content analysis while an earlier request is still pending.
+- Resume local video analysis in a different output folder without uploading the same video again.
+- Create or register other Avatars while an earlier Avatar request is still pending.
+
 ## 1.2.13 — 2026-11-17
 
 - See what changed before updating CreatOK CLI.
