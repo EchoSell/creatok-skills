@@ -3,6 +3,12 @@
 Changes in stable releases of CreatOK CLI and its bundled Skills. Dates for
 historical versions reflect their tagged commits and may differ from publication dates.
 
+## 1.2.16 — 2026-11-21
+
+- Some online actions now require the latest CLI version for your release channel.
+- Review an update with `creatok update --version <version>` and install it with `creatok update --apply --version <version>` when you're ready.
+- You can still check the status and recover the results of submitted jobs when an update is required.
+
 ## 1.2.15 — 2026-11-19
 
 - Query capabilities by domain or model to find relevant options more easily. The `--domain` option is now required.
