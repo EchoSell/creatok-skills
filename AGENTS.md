@@ -18,7 +18,7 @@ and documentation. It contains no runtime code.
 - `README.md` — user-facing install and usage docs.
 - Public installer scripts, once the public binary channel is live.
 
-Platform plugin release archives are an exception to the documentation-only rule. Store them under `plugins/<platform>/plugin/`; their source of truth remains `EchoSell/creatok-connector-packages`, not the CLI skills. For every platform package release, sync the validated artifacts built from the exact release commit, update `PLUGIN-RELEASES.md` and `PLUGIN-SHA256SUMS`, and verify the published copy. Keep CLI skill content out of this repository.
+The CreatOK Plugins archive under `plugins/codex/plugin/` is an exception to the documentation-only rule. Its source of truth is `EchoSell/creatok-connector-packages`. On each release, sync the validated Codex plugin artifact built from the exact release commit, update `PLUGIN-RELEASES.md` and `PLUGIN-SHA256SUMS`, and verify the published copy. Doubao and WorkBuddy distribute through their official marketplaces; do not archive their packages here. Keep CLI skill content out of this repository.
 
 ## CLI release notes
 

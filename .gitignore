@@ -22,6 +22,3 @@ node_modules/
 
 # Versioned platform release archives
 !plugins/codex/plugin/*.zip
-!plugins/doubao/plugin/*.zip
-!plugins/workbuddy/plugin/*.zip
-!plugins/workbuddy/plugin/skills/*.zip

@@ -14,7 +14,7 @@ and the CLI installs the skills.
 
 ## Platform plugins
 
-For Codex, Doubao and WorkBuddy plugin downloads and source provenance, see [platform plugins](PLUGIN-RELEASES.md).
+For the CreatOK Plugins download, compatibility status, and marketplace distribution, see [platform plugins](PLUGIN-RELEASES.md).
 
 ## CLI updates
 
