@@ -21,4 +21,4 @@ node_modules/
 .codex/
 
 # Versioned platform release archives
-!plugins/codex/plugin/*.zip
+!plugins/*.zip
