@@ -19,3 +19,6 @@ node_modules/
 
 # Project-local Codex skills
 .codex/
+
+# Versioned platform release archives
+!plugins/*.zip
