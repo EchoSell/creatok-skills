@@ -3,6 +3,12 @@
 Changes in stable releases of CreatOK CLI and its bundled Skills. Dates for
 historical versions reflect their tagged commits and may differ from publication dates.
 
+## 1.2.17 — 2026-11-23
+
+- The CLI now checks for required updates on its own release channel before affected online commands. You can review the update before confirming installation.
+- Recover a paid job with `creatok jobs status --confirmation-id <id>` if you did not receive a task ID.
+- Use `creatok jobs wait --confirmation-id <id>` to wait for the submission to finish and track the job through completion.
+
 ## 1.2.16 — 2026-11-21
 
 - Some online actions now require the latest CLI version for your release channel.
