@@ -60,14 +60,17 @@ Restart your agent (Claude Code, OpenClaw, Codex) and the skills appear.
 To keep skills in sync after a CLI upgrade, `creatok doctor` reports any drift;
 just run `creatok skills install` again.
 
-## Configure your API key
+## Sign in to CreatOK
 
-Generate a key at [creatok.ai/app/workspace/api-keys](https://www.creatok.ai/app/workspace/api-keys),
-then set it:
+Run the following command and complete the browser sign-in and workspace
+authorization:
 
 ```bash
-export CREATOK_API_KEY="ok_xxx"
+creatok auth login
 ```
+
+To check your sign-in status, run `creatok auth status`. On a machine without
+a browser, use `creatok auth login --no-browser` and follow the prompts.
 
 ## How to use
 
@@ -126,8 +129,9 @@ Run `creatok skills install`, then restart your agent.
 **`creatok doctor` says my skills are out of sync.**
 Run `creatok skills install` to resync them to the current CLI version.
 
-**My API key is configured but calls still fail.**
-- Check `CREATOK_API_KEY` is exported in the same shell.
+**I'm signed in but calls still fail.**
+- Run `creatok auth status` to check which credential the CLI is using. If needed, run `creatok auth login` again.
+- If you previously configured `CREATOK_API_KEY`, unset it so the CLI uses your OAuth sign-in.
 - Check your machine can reach [creatok.ai](https://www.creatok.ai).
 - If failures persist, upgrade the CLI: `npm install -g @creatok/cli@latest` (if that reports `ETARGET`, add `--registry=https://registry.npmjs.org` to bypass a lagging npm mirror).
 
