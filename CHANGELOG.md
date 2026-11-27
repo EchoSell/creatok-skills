@@ -3,6 +3,10 @@
 Changes in stable releases of CreatOK CLI and its bundled Skills. Dates for
 historical versions reflect their tagged commits and may differ from publication dates.
 
+## 1.2.18 — 2026-11-27
+
+- MAGI 2 first-frame and first-and-last-frame videos now accept `auto` to match the first frame's aspect ratio, as well as supported fixed ratios.
+
 ## 1.2.17 — 2026-11-23
 
 - The CLI now checks for required updates on its own release channel before affected online commands. You can review the update before confirming installation.
